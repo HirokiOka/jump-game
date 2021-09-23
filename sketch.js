@@ -1,21 +1,35 @@
 const gravity = 0.06;
 let player = null;
 let blocks = [];
-let yPositions = [40, 60, 60, 20, 200, 400, 300, 500, 450, 420];
+let positions = [
+  [400, 400],
+  [500, 500],
+  [700, 200],
+  [100, 200],
+  [200, 300],
+  [400, 100],
+];
+let img = null;
+
+function preload() {
+  img = loadImage('./forest_bg.jpg');
+}
+
 
 function setup() {
   createCanvas(600, 600);
   rectMode(CENTER);
-  player = new Character(width/2, height-20, 20);
-  blocks = new Array(yPositions.length).fill(null).map((_v, i) => (
-    new Block(int(random(width)), yPositions[i], 200, 10)
+  player = new Player(width/2, height-20, 20);
+  blocks = new Array(positions.length).fill(null).map((_v, i) => (
+    new Block(positions[i][0], positions[i][1], 200, 10)
   ));
 }
 
 function draw() {
+  let ellapsedSec = floor(frameCount / 60); 
+  image(img, 0, 0, width, height);
   noStroke();
-  background('skyblue');
-  fill('brown');
+  fill('#3A2012');
   rect(width/2, height, width, 20);
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
@@ -26,9 +40,15 @@ function draw() {
   });
   player.update();
   player.draw();
+  textSize(24);
+  fill(255);
+  stroke(0);
+  rect(width-100, 30, 120, 40);
+  fill(0);
+  text(`time: ${ellapsedSec}`, width*3/4, 40);
 }
 
-class Character {
+class Player {
   constructor(x, y, w) {
     this.x = x;
     this.y = y;
@@ -60,12 +80,12 @@ class Character {
     }
 
     if (this.speedY < 300) { this.speedY += gravity; }
-    if (this.x + this.w > width) {
-      this.x = width - this.w;
+    if (this.x + this.w*2 > width) {
+      this.x = width - this.w*2;
       if (this.isJumping) this.speedX *= -1;
     }
-    if (this.x - this.w < 0) {
-      this.x = this.w;
+    if (this.x - this.w/2 < 0) {
+      this.x = this.w/2;
       if (this.isJumping) this.speedX *= -1;
     }
   }
