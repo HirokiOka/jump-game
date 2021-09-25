@@ -1,16 +1,43 @@
 const gravity = 0.06;
 const positions = [
-  [200, 500],
-  [300, 400],
-  [100, 140],
-  [200, 300],
+  [200, 500, 120],
+  [500, 400, 240],
+  [100, 180, 120],
+  [200, 300, 120],
+  [480, 100, 220],
+  [200, 60, 100],
+];
+
+const cloudsPositions = [
+  [240, 400, 100],
+  [200, 200, 80],
+  [20, 300, 80],
+  [60, 100, 100],
+  [400, 580, 100],
+  [540, 500, 100],
 ];
 let player = null;
 let blocks = [];
+let clowds = [];
 let img = null;
+let skyImg = null;
+let tsukakenImg = null;
+let gameState = 0;
+let isDebug = false;
+let jumpSound = null;
+let gameStartSound = null;
+let clearSound = null;
 
 function preload() {
-  img = loadImage('./forest_bg.jpg');
+  img = loadImage('./saka.jpg');
+  skyImg = loadImage('./shindai.jpeg');
+  tsukakenImg = loadImage('./tsukaken.png');
+  jumpSound = new Audio();
+  jumpSound.src = './jump_sound.mp3';
+  gameStartSound = new Audio();
+  gameStartSound.src = './game_start.mp3';
+  clearSound = new Audio();
+  clearSound.src = './clear.mp3';
 }
 
 function setup() {
@@ -19,19 +46,56 @@ function setup() {
   textAlign(CENTER);
   player = new Player(width/2, height-20, 20);
   blocks = new Array(positions.length).fill(null).map((_v, i) => (
-    new Block(positions[i][0], positions[i][1], 160, 40)
+    new Block(positions[i][0], positions[i][1], positions[i][2], 24)
+  ));
+  clowds = new Array(cloudsPositions.length).fill(null).map((_v, i) => (
+    new Block(cloudsPositions[i][0], cloudsPositions[i][1], cloudsPositions[i][2], 48)
   ));
 }
 
 function draw() {
-  drawStage();
-  blocks.forEach((block, _i) => {
-    block.draw();
-    player.detectCollision(block);
-  });
-  player.update();
-  player.draw();
-  drawTime();
+  if (gameState === 0) {
+    background(0);
+    textFont('arial black');
+    fill(255);
+    textSize(64);
+    text("TOZAN KING", width/2, height/2 -20);
+    textSize(24);
+    textFont('Impact');
+    text("- press space to start -", width/2, height/2 + 20);
+    fill(0);
+  } else {
+
+    switchGameState();
+    if (gameState === 1) {
+      drawStage();
+      blocks.forEach((block, i) => {
+        block.draw();
+        player.detectCollision(block, i);
+      });
+    } else if (gameState === 2) {
+      drawStageTwo();
+      clowds.forEach((clowd, i) => {
+        fill('gray');
+        clowd.draw();
+        player.detectCollision(clowd, i);
+      });
+    }
+    player.update();
+    player.draw();
+    drawTime();
+    text(gameState, width-20, height-20);
+    }
+}
+
+function switchGameState() {
+  if ((gameState === 1) && player.y < 0) {
+    gameState = 2;
+    player.y = height - player.y - player.s;
+  } else if ((gameState === 2) && (player.y > height-20)) {
+    gameState = 1;
+    player.y = 20;
+  }
 }
 
 function drawTime() {
@@ -41,7 +105,14 @@ function drawTime() {
   stroke(0);
   rect(width-100, 30, 120, 40);
   fill(0);
-  text(`time: ${ellapsedSec}`, width-100, 40);
+  text(`${secToMin(ellapsedSec)}`, width-100, 40);
+}
+
+function secToMin(sec) {
+  const minutes = floor(sec / 60);
+  const seconds = sec % 60;
+  const displayTime = `${minutes}:${seconds}`;
+  return displayTime;
 }
 
 function drawStage() {
@@ -51,6 +122,15 @@ function drawStage() {
   rect(width/2, height, width, 20);
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
+}
+
+function drawStageTwo() {
+  stroke(0);
+  fill('gray');
+  image(skyImg, 0, 0, width, height);
+  rect(0, height/2, 20, height);
+  rect(width, height/2, 20, height);
+  image(tsukakenImg, 30, 20, 40, 40);
 }
 
 class Player {
@@ -70,13 +150,15 @@ class Player {
 
   update() {
     fill(0);
-    text(`jump: ${this.isJumping}`, 40, height-40);
-    text(`x: ${this.x}`, 40, height-80);
-    text(`y: ${this.y}`, 40, height-60);
+    if (isDebug) {
+      text(`jump: ${this.isJumping}`, 40, height-40);
+      text(`x: ${this.x}`, 40, height-80);
+      text(`y: ${this.y}`, 40, height-60);
+    }
     this.x += this.speedX;
     this.y += this.speedY;
     
-    if (this.y + this.s > height) {
+    if (gameState === 1 && this.y + this.s > height) {
       this.y = height - this.s;
       this.speedY = 0;
       if (this.isJumping) {
@@ -103,17 +185,25 @@ class Player {
     this.isJumping = true;
   }
 
-  detectCollision(block) {
-    this.detectCollisionY(block);
+  detectCollision(block, index) {
+    this.detectCollisionY(block, index);
     this.detectCollisionX(block);
   }
 
-  detectCollisionY(block) {
+  detectCollisionY(block ,index) {
     if ((this.speedY > 0) && this.isOnTheBlock(block)) {
       this.y = block.y - block.h/2 - this.s/2;
       this.speedY = 0;
       this.speedX = 0;
       this.isJumping = false;
+      if (gameState == 2 && index === 3) {
+        fill('yellow');
+        textSize(64);
+        stroke(0);
+        text('CLEAR!', width/2, height/2);
+        clearSound.play();
+        noLoop();
+      }
     }
     if ((this.speedY == 0) && this.isDroppedFromBlock(block)) this.isJumping = true;
 
@@ -213,10 +303,21 @@ class Block {
 }
 
 function keyPressed() {
-  if (player.isJumping) return;
-  if (keyCode === 32) player.jump();
-  if (keyCode === RIGHT_ARROW) player.speedX += 2;
-  if (keyCode === LEFT_ARROW) player.speedX -= 2;
+  if (gameState === 0) {
+    if (keyCode === 32) {
+      gameState = 1;
+      gameStartSound.play();
+    }
+  } else {
+    if (player.isJumping) return;
+    if (keyCode === 32) {
+      player.jump();
+      jumpSound.play();
+    }
+
+    if (keyCode === RIGHT_ARROW) player.speedX += 2;
+    if (keyCode === LEFT_ARROW) player.speedX -= 2;
+  }
 }
 
 function keyReleased() {
