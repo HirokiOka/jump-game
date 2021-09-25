@@ -31,21 +31,18 @@ const blocksInfo = [
 
 let player = null;
 let blocks = new Array(blocksInfo.length).fill(null);
-let slopeImg = null;
-let shindaiImg = null;
-let tsukakenImg = null;
+let stageImages = new Array(blocksInfo.length).fill(null);
+let imagePaths = ['./public/img/slope.png', './public/img/eng_front.png', './public/img/labo.jpg'];
+let tsukakenLogo = null;
 let gameState = 0;
-let isDebug = false;
 let jumpSound = null;
 let gameStartSound = null;
 let clearSound = null;
 
 //load assets before rendering
 function preload() {
-  slopeImg = loadImage('./public/img/slope.png');
-  shindaiImg = loadImage('./public/img/eng_front.png');
-  laboImg = loadImage('./public/img/labo.jpg');
-  tsukakenImg = loadImage('./public/img/tsukaken.png');
+  stageImages = stageImages.map((_v, i) => loadImage(imagePaths[i]));
+  tsukakenLogo = loadImage('./public/img/tsukaken.png');
 
   jumpSound = new Audio();
   jumpSound.src = './public/sound/jump_sound.mp3';
@@ -93,16 +90,9 @@ function drawStartScene() {
     fill(0);
 }
 
-function drawGameScene(stage) {
-
-  if (stage === 1) {
-    drawStage(slopeImg);
-  } else if (stage === 2) {
-    drawStage(shindaiImg);
-  } else if (stage === 3) {
-    drawStage(laboImg);
-  }
-  blocks[stage-1].forEach((block, i) => {
+function drawGameScene() {
+  drawStage();
+  blocks[gameState-1].forEach((block, i) => {
     block.draw();
     player.detectCollision(block, i);
   });
@@ -139,8 +129,9 @@ function secToDisplayTime(sec) {
 }
 
 
-function drawStage(img) {
-  image(img, 0, 0, width, height);
+function drawStage() {
+  const stageNum = gameState - 1;
+  image(stageImages[stageNum], 0, 0, width, height);
   fill('gray');
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
@@ -198,13 +189,13 @@ class Player {
     this.detectCollisionX(block);
   }
 
-  detectCollisionY(block) {
+  detectCollisionY(block, index) {
     if ((this.speedY > 0) && this.isOnTheBlock(block)) {
       this.y = block.y - block.h/2 - this.s/2;
       this.speedY = 0;
       this.speedX = 0;
       this.isJumping = false;
-      this.judgeClear();
+      this.judgeClear(index);
     }
     
     if ((this.speedY == 0) && this.isDroppedFromBlock(block)) this.isJumping = true;
