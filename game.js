@@ -255,7 +255,7 @@ class Player {
   }
 
   judgeClear(blockIndex) {
-    if (gameState == 2 && blockIndex === 3) {
+    if (gameState == 3 && blockIndex === 3) {
       fill('yellow');
       textSize(64);
       stroke(0);
