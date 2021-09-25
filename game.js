@@ -1,5 +1,6 @@
 const gravity = 0.06;
-const positions = [
+const stageOneBlocksInfo = [
+  //centerX, centerY, width
   [200, 500, 120],
   [500, 400, 240],
   [100, 180, 120],
@@ -7,8 +8,7 @@ const positions = [
   [480, 100, 220],
   [200, 60, 100],
 ];
-
-const cloudsPositions = [
+const stageTwoBlocksInfo = [
   [240, 400, 100],
   [200, 200, 80],
   [20, 300, 80],
@@ -17,10 +17,10 @@ const cloudsPositions = [
   [540, 500, 100],
 ];
 let player = null;
-let blocks = [];
-let clowds = [];
+let stageOneBlocks = [];
+let stageTwoBlocks = [];
 let img = null;
-let skyImg = null;
+let shindaiImg = null;
 let tsukakenImg = null;
 let gameState = 0;
 let isDebug = false;
@@ -28,33 +28,50 @@ let jumpSound = null;
 let gameStartSound = null;
 let clearSound = null;
 
+//load assets before rendering
 function preload() {
-  img = loadImage('./saka.jpg');
-  skyImg = loadImage('./shindai.jpeg');
-  tsukakenImg = loadImage('./tsukaken.png');
+  img = loadImage('./public/img/slope.png');
+  shindaiImg = loadImage('./public/img/eng_front.png');
+  tsukakenImg = loadImage('./public/img/tsukaken.png');
+
   jumpSound = new Audio();
-  jumpSound.src = './jump_sound.mp3';
+  jumpSound.src = './public/sound/jump_sound.mp3';
   gameStartSound = new Audio();
-  gameStartSound.src = './game_start.mp3';
+  gameStartSound.src = './public/sound/game_start.mp3';
   clearSound = new Audio();
-  clearSound.src = './clear.mp3';
+  clearSound.src = './public/sound/clear.mp3';
 }
 
+//initialize HTML canvas and game objects
 function setup() {
   createCanvas(600, 600);
   rectMode(CENTER);
   textAlign(CENTER);
   player = new Player(width/2, height-20, 20);
-  blocks = new Array(positions.length).fill(null).map((_v, i) => (
-    new Block(positions[i][0], positions[i][1], positions[i][2], 24)
+  stageOneBlocks = new Array(stageOneBlocksInfo.length).fill(null).map((_v, i) => (
+    new Block(stageOneBlocksInfo[i][0], stageOneBlocksInfo[i][1], stageOneBlocksInfo[i][2], 24)
   ));
-  clowds = new Array(cloudsPositions.length).fill(null).map((_v, i) => (
-    new Block(cloudsPositions[i][0], cloudsPositions[i][1], cloudsPositions[i][2], 48)
+  stageTwoBlocks = new Array(stageTwoBlocksInfo.length).fill(null).map((_v, i) => (
+    new Block(stageTwoBlocksInfo[i][0], stageTwoBlocksInfo[i][1], stageTwoBlocksInfo[i][2], 48)
   ));
 }
 
+//draw and update game
 function draw() {
   if (gameState === 0) {
+    drawStartScene();
+    return;
+  }
+
+  switchGameState();
+  drawGameScene(gameState);
+  player.update();
+  player.draw();
+  drawTime();
+}
+
+//global functions in draw
+function drawStartScene() {
     background(0);
     textFont('arial black');
     fill(255);
@@ -64,28 +81,23 @@ function draw() {
     textFont('Impact');
     text("- press space to start -", width/2, height/2 + 20);
     fill(0);
-  } else {
+}
 
-    switchGameState();
-    if (gameState === 1) {
-      drawStage();
-      blocks.forEach((block, i) => {
-        block.draw();
-        player.detectCollision(block, i);
-      });
-    } else if (gameState === 2) {
-      drawStageTwo();
-      clowds.forEach((clowd, i) => {
-        fill('gray');
-        clowd.draw();
-        player.detectCollision(clowd, i);
-      });
-    }
-    player.update();
-    player.draw();
-    drawTime();
-    text(gameState, width-20, height-20);
-    }
+function drawGameScene(stage) {
+  if (stage === 1) {
+    drawStageOne();
+    stageOneBlocks.forEach((block, i) => {
+      block.draw();
+      player.detectCollision(block, i);
+    });
+  } else if (stage === 2) {
+    drawStageTwo();
+    stageTwoBlocks.forEach((block, i) => {
+      fill('gray');
+      block.draw();
+      player.detectCollision(block, i);
+    });
+  }
 }
 
 function switchGameState() {
@@ -115,7 +127,7 @@ function secToMin(sec) {
   return displayTime;
 }
 
-function drawStage() {
+function drawStageOne() {
   noStroke();
   fill('#3A2012');
   image(img, 0, 0, width, height);
@@ -127,11 +139,12 @@ function drawStage() {
 function drawStageTwo() {
   stroke(0);
   fill('gray');
-  image(skyImg, 0, 0, width, height);
+  image(shindaiImg, 0, 0, width, height);
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
   image(tsukakenImg, 30, 20, 40, 40);
 }
+
 
 class Player {
   constructor(x, y, s) {
@@ -149,12 +162,6 @@ class Player {
   }
 
   update() {
-    fill(0);
-    if (isDebug) {
-      text(`jump: ${this.isJumping}`, 40, height-40);
-      text(`x: ${this.x}`, 40, height-80);
-      text(`y: ${this.y}`, 40, height-60);
-    }
     this.x += this.speedX;
     this.y += this.speedY;
     
@@ -196,15 +203,9 @@ class Player {
       this.speedY = 0;
       this.speedX = 0;
       this.isJumping = false;
-      if (gameState == 2 && index === 3) {
-        fill('yellow');
-        textSize(64);
-        stroke(0);
-        text('CLEAR!', width/2, height/2);
-        clearSound.play();
-        noLoop();
-      }
+      this.judgeClear();
     }
+    
     if ((this.speedY == 0) && this.isDroppedFromBlock(block)) this.isJumping = true;
 
     if (this.isCollideWithCeiling(block) && (this.speedY < 0)) {
@@ -214,8 +215,17 @@ class Player {
   }
 
   detectCollisionX(block) {
-    if (this.isCollideWithSide(block)) {
-      this.speedX *= -1;
+    if (this.isCollideWithSide(block)) this.speedX *= -1;
+  }
+
+  judgeClear(blockIndex) {
+    if (gameState == 2 && blockIndex === 3) {
+      fill('yellow');
+      textSize(64);
+      stroke(0);
+      text('CLEAR!', width/2, height/2);
+      clearSound.play();
+      noLoop();
     }
   }
 
@@ -260,7 +270,6 @@ class Player {
   isCollideWithCeiling(block) {
     if ((this.x > block.x - block.w/2) && (this.x < block.x + block.w/2)) {
       if (this.calcYDistanceFromCeiling(block) < 10) {
-        console.log('collide');
         return true;
       }
     }
@@ -271,7 +280,6 @@ class Player {
   isOnTheBlock(block) {
     if ((this.x > block.x - block.w/2) && (this.x < block.x + block.w/2)) {
       if (this.calcYDistanceFromFloor(block) < 10) {
-        console.log('on');
         return true;
       }
     }
@@ -281,7 +289,6 @@ class Player {
   isDroppedFromBlock(block) {
     if ((this.x < block.x - block.w/2) || (this.x > block.x + block.w/2)) {
       if (this.calcYDistanceFromFloor(block) < 10) {
-        console.log('dropped');
         return true;
       }
     }
@@ -296,18 +303,16 @@ class Block {
     this.w = w;
     this.h = h;
   }
-
   draw() {
     rect(this.x, this.y, this.w, this.h, 5);
   }
 }
 
+// keyEvent functions
 function keyPressed() {
-  if (gameState === 0) {
-    if (keyCode === 32) {
+  if (gameState === 0 && keyCode === 32) {
       gameState = 1;
       gameStartSound.play();
-    }
   } else {
     if (player.isJumping) return;
     if (keyCode === 32) {
@@ -321,8 +326,6 @@ function keyPressed() {
 }
 
 function keyReleased() {
-  if (player.isJumping) return;
+  if (gameState !== 0 && player.isJumping) return;
   player.speedX = 0;
 }
-
-
