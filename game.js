@@ -1,34 +1,36 @@
 const gravity = 0.06;
-const stageOneBlocksInfo = [
-  //centerX, centerY, width
-  [200, 500, 120],
-  [500, 400, 240],
-  [100, 180, 120],
-  [200, 300, 120],
-  [480, 100, 220],
-  [200, 60, 100],
-];
-const stageTwoBlocksInfo = [
-  [240, 400, 100],
-  [200, 200, 80],
-  [20, 300, 80],
-  [60, 100, 100],
-  [400, 580, 100],
-  [540, 500, 100],
-];
-const stageThreeBlocksInfo = [
-  [240, 400, 100],
-  [200, 200, 80],
-  [20, 300, 80],
-  [60, 100, 100],
-  [400, 580, 100],
-  [540, 500, 100],
+const stageOneBlockCol = "green";
+const stageTwoBlockCol = "gray";
+const stageThreeBlockCol = "gray";
+const blocksInfo = [
+  [
+    [200, 500, 120, 24, stageOneBlockCol],
+    [500, 400, 240, 24, stageOneBlockCol],
+    [100, 180, 120, 24, stageOneBlockCol],
+    [200, 300, 120, 24, stageOneBlockCol],
+    [480, 100, 220, 24, stageOneBlockCol],
+    [200, 60, 100, 24, stageOneBlockCol],
+  ],
+  [
+    [240, 400, 100, 48, stageTwoBlockCol],
+    [200, 200, 80, 48, stageTwoBlockCol],
+    [20, 300, 80, 48, stageTwoBlockCol],
+    [60, 100, 100, 48, stageTwoBlockCol],
+    [400, 580, 100, 48, stageTwoBlockCol],
+    [540, 500, 100, 48, stageTwoBlockCol],
+  ],
+  [
+    [240, 400, 100, 48, stageThreeBlockCol],
+    [200, 200, 80, 48, stageThreeBlockCol],
+    [20, 300, 80, 48, stageThreeBlockCol],
+    [60, 100, 100, 48, stageThreeBlockCol],
+    [400, 580, 100, 48, stageThreeBlockCol],
+    [540, 500, 100, 48, stageThreeBlockCol],
+  ]
 ];
 
 let player = null;
-let stageOneBlocks = [];
-let stageTwoBlocks = [];
-let stageThreeBlocks = [];
+let blocks = new Array(blocksInfo.length).fill(null);
 let slopeImg = null;
 let shindaiImg = null;
 let tsukakenImg = null;
@@ -59,15 +61,14 @@ function setup() {
   rectMode(CENTER);
   textAlign(CENTER);
   player = new Player(width/2, height-20, 20);
-  stageOneBlocks = new Array(stageOneBlocksInfo.length).fill(null).map((_v, i) => (
-    new Block(stageOneBlocksInfo[i][0], stageOneBlocksInfo[i][1], stageOneBlocksInfo[i][2], 24)
-  ));
-  stageTwoBlocks = new Array(stageTwoBlocksInfo.length).fill(null).map((_v, i) => (
-    new Block(stageTwoBlocksInfo[i][0], stageTwoBlocksInfo[i][1], stageTwoBlocksInfo[i][2], 48)
-  ));
-  stageThreeBlocks = new Array(stageThreeBlocksInfo.length).fill(null).map((_v, i) => (
-    new Block(stageThreeBlocksInfo[i][0], stageThreeBlocksInfo[i][1], stageThreeBlocksInfo[i][2], 48)
-  ));
+  blocks.forEach((_v, i) => {
+    blocks[i] = new Array(blocksInfo[i].length).fill(null).map((_v, j) => ( new Block(...blocksInfo[i][j]) ));
+  });
+  /*
+  stageOneBlocks = new Array(blocksInfo[0].length).fill(null).map((_v, i) => ( new Block(...blocksInfo[0][i]) ));
+  stageTwoBlocks = new Array(blocksInfo[1].length).fill(null).map((_v, i) => ( new Block(...blocksInfo[1][i]) ));
+  stageThreeBlocks = new Array(blocksInfo[2].length).fill(null).map((_v, i) => ( new Block(...blocksInfo[2][i]) ));
+  */
 }
 
 //draw and update game
@@ -98,42 +99,26 @@ function drawStartScene() {
 }
 
 function drawGameScene(stage) {
+
   if (stage === 1) {
-    drawStageOne();
-    stageOneBlocks.forEach((block, i) => {
-      fill('green');
-      block.draw();
-      player.detectCollision(block, i);
-    });
+    drawStage(slopeImg);
   } else if (stage === 2) {
-    drawStageTwo();
-    stageTwoBlocks.forEach((block, i) => {
-      fill('gray');
-      block.draw();
-      player.detectCollision(block, i);
-    });
+    drawStage(shindaiImg);
   } else if (stage === 3) {
-    drawStageThree();
-    stageThreeBlocks.forEach((block, i) => {
-      fill('blue');
-      block.draw();
-      player.detectCollision(block, i);
-    });
+    drawStage(laboImg);
   }
+  blocks[stage-1].forEach((block, i) => {
+    block.draw();
+    player.detectCollision(block, i);
+  });
 }
 
 function switchGameState() {
-  if ((gameState === 1) && player.y < 0) {
-    gameState = 2;
+  if (player.y < 0) {
+    gameState++;
     player.y = height - player.y - player.s;
-  } else if ((gameState === 2) && (player.y > height-20)) {
-    gameState = 1;
-    player.y = 20;
-  } else if ((gameState === 2) && player.y < 0) {
-    gameState = 3;
-    player.y = height - player.y - player.s;
-  } else if ((gameState === 3) && (player.y > height-20)) {
-    gameState = 2;
+  } else if(player.y > height-20) {
+    gameState--;
     player.y = 20;
   }
 }
@@ -145,42 +130,27 @@ function drawTime() {
   stroke(0);
   rect(width-100, 30, 120, 40);
   fill(0);
-  text(`${secToMin(ellapsedSec)}`, width-100, 40);
+  text(`${secToDisplayTime(ellapsedSec)}`, width-100, 40);
 }
 
-function secToMin(sec) {
+
+function secToDisplayTime(sec) {
   const minutes = floor(sec / 60);
   const seconds = sec % 60;
-  const displayTime = `${minutes}:${seconds}`;
+  const displayMinutes = minutes < 10 ? (0 + minutes.toString()) : minutes.toString();
+  const displaySeconds = seconds < 10 ? 0 + seconds.toString() : seconds.toString();
+  const displayTime = displayMinutes + ":" + displaySeconds;
   return displayTime;
 }
 
-function drawStageOne() {
-  noStroke();
-  fill('#3A2012');
-  image(slopeImg, 0, 0, width, height);
-  rect(width/2, height, width, 20);
-  rect(0, height/2, 20, height);
-  rect(width, height/2, 20, height);
-}
 
-function drawStageTwo() {
-  stroke(0);
-  fill('#3A2012');
-  image(shindaiImg, 0, 0, width, height);
-  rect(0, height/2, 20, height);
-  rect(width, height/2, 20, height);
-}
-
-function drawStageThree() {
-  stroke(0);
+function drawStage(img) {
+  image(img, 0, 0, width, height);
   fill('gray');
-  image(laboImg, 0, 0, width, height);
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
-  image(tsukakenImg, 30, 20, 40, 40);
+  if (gameState === 1) rect(width/2, height, width, 20);
 }
-
 
 class Player {
   constructor(x, y, s) {
@@ -333,14 +303,20 @@ class Player {
 }
 
 class Block {
-  constructor(x, y, w, h) {
+  constructor(x, y, w, h, col, isVisible=true) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.col = col;
+    this.isVisible = isVisible;
   }
+
   draw() {
-    rect(this.x, this.y, this.w, this.h, 5);
+    if (this.isVisible) {
+      fill(this.col);
+      rect(this.x, this.y, this.w, this.h, 5);
+    }
   }
 }
 
