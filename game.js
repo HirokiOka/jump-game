@@ -64,11 +64,6 @@ function setup() {
   blocks.forEach((_v, i) => {
     blocks[i] = new Array(blocksInfo[i].length).fill(null).map((_v, j) => ( new Block(...blocksInfo[i][j]) ));
   });
-  /*
-  stageOneBlocks = new Array(blocksInfo[0].length).fill(null).map((_v, i) => ( new Block(...blocksInfo[0][i]) ));
-  stageTwoBlocks = new Array(blocksInfo[1].length).fill(null).map((_v, i) => ( new Block(...blocksInfo[1][i]) ));
-  stageThreeBlocks = new Array(blocksInfo[2].length).fill(null).map((_v, i) => ( new Block(...blocksInfo[2][i]) ));
-  */
 }
 
 //draw and update game
@@ -91,7 +86,7 @@ function drawStartScene() {
     textFont('arial black');
     fill(255);
     textSize(64);
-    text("TOZAN KING", width/2, height/2 -20);
+    text("TOZAN KING", width/2, height/2 - 20);
     textSize(24);
     textFont('Impact');
     text("- press space to start -", width/2, height/2 + 20);
