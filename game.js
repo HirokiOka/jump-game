@@ -16,10 +16,20 @@ const stageTwoBlocksInfo = [
   [400, 580, 100],
   [540, 500, 100],
 ];
+const stageThreeBlocksInfo = [
+  [240, 400, 100],
+  [200, 200, 80],
+  [20, 300, 80],
+  [60, 100, 100],
+  [400, 580, 100],
+  [540, 500, 100],
+];
+
 let player = null;
 let stageOneBlocks = [];
 let stageTwoBlocks = [];
-let img = null;
+let stageThreeBlocks = [];
+let slopeImg = null;
 let shindaiImg = null;
 let tsukakenImg = null;
 let gameState = 0;
@@ -30,8 +40,9 @@ let clearSound = null;
 
 //load assets before rendering
 function preload() {
-  img = loadImage('./public/img/slope.png');
+  slopeImg = loadImage('./public/img/slope.png');
   shindaiImg = loadImage('./public/img/eng_front.png');
+  laboImg = loadImage('./public/img/labo.jpg');
   tsukakenImg = loadImage('./public/img/tsukaken.png');
 
   jumpSound = new Audio();
@@ -53,6 +64,9 @@ function setup() {
   ));
   stageTwoBlocks = new Array(stageTwoBlocksInfo.length).fill(null).map((_v, i) => (
     new Block(stageTwoBlocksInfo[i][0], stageTwoBlocksInfo[i][1], stageTwoBlocksInfo[i][2], 48)
+  ));
+  stageThreeBlocks = new Array(stageThreeBlocksInfo.length).fill(null).map((_v, i) => (
+    new Block(stageThreeBlocksInfo[i][0], stageThreeBlocksInfo[i][1], stageThreeBlocksInfo[i][2], 48)
   ));
 }
 
@@ -87,6 +101,7 @@ function drawGameScene(stage) {
   if (stage === 1) {
     drawStageOne();
     stageOneBlocks.forEach((block, i) => {
+      fill('green');
       block.draw();
       player.detectCollision(block, i);
     });
@@ -94,6 +109,13 @@ function drawGameScene(stage) {
     drawStageTwo();
     stageTwoBlocks.forEach((block, i) => {
       fill('gray');
+      block.draw();
+      player.detectCollision(block, i);
+    });
+  } else if (stage === 3) {
+    drawStageThree();
+    stageThreeBlocks.forEach((block, i) => {
+      fill('blue');
       block.draw();
       player.detectCollision(block, i);
     });
@@ -106,6 +128,12 @@ function switchGameState() {
     player.y = height - player.y - player.s;
   } else if ((gameState === 2) && (player.y > height-20)) {
     gameState = 1;
+    player.y = 20;
+  } else if ((gameState === 2) && player.y < 0) {
+    gameState = 3;
+    player.y = height - player.y - player.s;
+  } else if ((gameState === 3) && (player.y > height-20)) {
+    gameState = 2;
     player.y = 20;
   }
 }
@@ -130,7 +158,7 @@ function secToMin(sec) {
 function drawStageOne() {
   noStroke();
   fill('#3A2012');
-  image(img, 0, 0, width, height);
+  image(slopeImg, 0, 0, width, height);
   rect(width/2, height, width, 20);
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
@@ -138,8 +166,16 @@ function drawStageOne() {
 
 function drawStageTwo() {
   stroke(0);
-  fill('gray');
+  fill('#3A2012');
   image(shindaiImg, 0, 0, width, height);
+  rect(0, height/2, 20, height);
+  rect(width, height/2, 20, height);
+}
+
+function drawStageThree() {
+  stroke(0);
+  fill('gray');
+  image(laboImg, 0, 0, width, height);
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
   image(tsukakenImg, 30, 20, 40, 40);
@@ -197,7 +233,7 @@ class Player {
     this.detectCollisionX(block);
   }
 
-  detectCollisionY(block ,index) {
+  detectCollisionY(block) {
     if ((this.speedY > 0) && this.isOnTheBlock(block)) {
       this.y = block.y - block.h/2 - this.s/2;
       this.speedY = 0;
