@@ -1,37 +1,63 @@
 const gravity = 0.06;
 const stageOneBlockCol = "green";
 const stageTwoBlockCol = "gray";
-const stageThreeBlockCol = "gray";
+const stageThreeBlockCol = "blue";
+const stageFourBlockCol = "red";
 const blocksInfo = [
   [
-    [200, 500, 120, 24, stageOneBlockCol],
-    [500, 400, 240, 24, stageOneBlockCol],
-    [100, 180, 120, 24, stageOneBlockCol],
-    [200, 300, 120, 24, stageOneBlockCol],
-    [480, 100, 220, 24, stageOneBlockCol],
-    [200, 60, 100, 24, stageOneBlockCol],
+    [200, 550, 120, 100, stageOneBlockCol],
+    [480, 400, 120,  48, stageOneBlockCol],
+    [180, 320, 120,  48, stageOneBlockCol],
+    [ 30, 300,  40,  48, stageOneBlockCol],
+    [120, 160, 120,  48, stageOneBlockCol],
+    [410,  60, 120,  48, stageOneBlockCol],
   ],
   [
-    [240, 400, 100, 48, stageTwoBlockCol],
-    [200, 200, 80, 48, stageTwoBlockCol],
-    [20, 300, 80, 48, stageTwoBlockCol],
-    [60, 100, 100, 48, stageTwoBlockCol],
-    [400, 580, 100, 48, stageTwoBlockCol],
-    [540, 500, 100, 48, stageTwoBlockCol],
+    [540, 530, 100, 48, stageTwoBlockCol],
+    [220, 450, 100, 48, stageTwoBlockCol],
+    [220, 200, 100, 48, stageTwoBlockCol],
+    [ 20, 325,  80, 48, stageTwoBlockCol],
+    [ 60, 100,  20, 48, stageTwoBlockCol],
+    [ 340, 100,  20, 18, stageTwoBlockCol],
+    [ 580,  70,  20, 18, stageTwoBlockCol],
+    [ 60,   0,  20,  1, stageTwoBlockCol, false],
   ],
   [
-    [240, 400, 100, 48, stageThreeBlockCol],
-    [200, 200, 80, 48, stageThreeBlockCol],
-    [20, 300, 80, 48, stageThreeBlockCol],
-    [60, 100, 100, 48, stageThreeBlockCol],
-    [400, 580, 100, 48, stageThreeBlockCol],
-    [540, 500, 100, 48, stageThreeBlockCol],
+    [320, 590,  20, 12, stageThreeBlockCol],
+    [330, 570,   1, 60, stageThreeBlockCol],
+    [580, 590,  20, 12, stageThreeBlockCol],
+    [320, 540,  20, 12, stageThreeBlockCol],
+
+    [ 90, 450,  20, 12, stageThreeBlockCol],
+    [ 20, 330,  20, 12, stageThreeBlockCol],
+    [130, 330,  20, 12, stageThreeBlockCol],
+
+    [550, 450,  20, 12, stageThreeBlockCol],
+    [460, 320,  20, 12, stageThreeBlockCol],
+    [520, 320,  20, 12, stageThreeBlockCol],
+    [580, 320,  20, 12, stageThreeBlockCol],
+    [520, 200,  20, 12, stageThreeBlockCol],
+
+    [355, 185,   1, 60, stageThreeBlockCol],
+    [295, 195,  20, 12, stageThreeBlockCol],
+    [175, 195,  20, 12, stageThreeBlockCol],
+    [ 55, 195,  20, 12, stageThreeBlockCol],
+    [235,  75,  20, 12, stageThreeBlockCol],
+    [115,  65,  20, 32, stageThreeBlockCol],
+  ],
+  [
+    [80, 550, 50, 24, stageFourBlockCol],
+    [120, 420, 50, 24,stageFourBlockCol],
+    [400, 420, 50, 24,  stageFourBlockCol],
+    [550, 300, 100, 24, stageFourBlockCol],
+    [520, 170, 50, 24, stageFourBlockCol],
+    [520, 40, 50, 24, stageFourBlockCol],
   ]
 ];
 
 let player = null;
 let blocks = new Array(blocksInfo.length).fill(null);
-let stageImages = new Array(blocksInfo.length).fill(null);
+let stageImages = new Array(3).fill(null);
 let imagePaths = ['./public/img/slope.png', './public/img/eng_front.png', './public/img/labo.jpg'];
 let tsukakenLogo = null;
 let gameState = 0;
@@ -96,10 +122,11 @@ function drawGameScene() {
     block.draw();
     player.detectCollision(block, i);
   });
+  if (gameState === 3) image(tsukakenLogo, 100, 12, 40, 40);
 }
 
 function switchGameState() {
-  if (player.y < 0) {
+  if (player.y < 0 && gameState !== 3) {
     gameState++;
     player.y = height - player.y - player.s;
   } else if(player.y > height-20) {
@@ -156,7 +183,7 @@ class Player {
   update() {
     this.x += this.speedX;
     this.y += this.speedY;
-    
+   
     if (gameState === 1 && this.y + this.s > height) {
       this.y = height - this.s;
       this.speedY = 0;
@@ -164,6 +191,10 @@ class Player {
         this.isJumping = false;
         this.speedX = 0;
       }
+    }
+
+    if (gameState === 3 && this.y - this.s < 0) {
+      this.speedY *-1;
     }
 
     if (this.isJumping) this.speedY += gravity; 
@@ -211,7 +242,8 @@ class Player {
   }
 
   judgeClear(blockIndex) {
-    if (gameState == 3 && blockIndex === 3) {
+    console.log(blockIndex);
+    if (gameState == 3 && blockIndex === 17) {
       fill('yellow');
       textSize(64);
       stroke(0);
