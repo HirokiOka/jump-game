@@ -17,42 +17,29 @@ const blocksInfo = [
     [220, 450, 100, 48, stageTwoBlockCol],
     [220, 200, 100, 48, stageTwoBlockCol],
     [ 20, 325,  80, 48, stageTwoBlockCol],
-    [ 60, 100,  20, 48, stageTwoBlockCol],
-    [ 340, 100,  20, 18, stageTwoBlockCol],
-    [ 580,  70,  20, 18, stageTwoBlockCol],
-    [ 60,   0,  20,  1, stageTwoBlockCol, false],
+    [ 60, 100,  24, 48, stageTwoBlockCol],
+    [ 340, 100,  24, 18, stageTwoBlockCol],
+    [ 580,  70,  24, 18, stageTwoBlockCol],
   ],
   [
-    [320, 590,  20, 12, stageThreeBlockCol],
-    [330, 570,   1, 60, stageThreeBlockCol],
-    [580, 590,  20, 12, stageThreeBlockCol],
-    [320, 540,  20, 12, stageThreeBlockCol],
+    [580, 574,  40, 20, 'white'],
+    [320, 540,  24, 20, stageThreeBlockCol],
 
-    [ 90, 450,  20, 12, stageThreeBlockCol],
-    [ 20, 330,  20, 12, stageThreeBlockCol],
-    [130, 330,  20, 12, stageThreeBlockCol],
+    [ 90, 440,  26, 20, stageThreeBlockCol],
+    [ 20, 330,  24, 20, stageThreeBlockCol],
+    [140, 350,  30, 40, stageThreeBlockCol],
 
-    [550, 450,  20, 12, stageThreeBlockCol],
-    [460, 320,  20, 12, stageThreeBlockCol],
-    [520, 320,  20, 12, stageThreeBlockCol],
-    [580, 320,  20, 12, stageThreeBlockCol],
-    [520, 200,  20, 12, stageThreeBlockCol],
+    [550, 450,  24, 20, stageThreeBlockCol],
+    [460, 320,  24, 20, stageThreeBlockCol],
+    [520, 310,  60, 20, stageThreeBlockCol],
+    [580, 322,  24, 20, stageThreeBlockCol],
+    [520, 200,  24, 20, stageThreeBlockCol],
 
-    [355, 185,   1, 60, stageThreeBlockCol],
-    [295, 195,  20, 12, stageThreeBlockCol],
-    [175, 195,  20, 12, stageThreeBlockCol],
-    [ 55, 195,  20, 12, stageThreeBlockCol],
-    [235,  75,  20, 12, stageThreeBlockCol],
-    [115,  65,  20, 32, stageThreeBlockCol],
+    [300, 240,  44, 40, stageThreeBlockCol],
+    [ 55, 200,  32, 40, stageThreeBlockCol],
+    [235,  75,  24, 20, stageThreeBlockCol],
+    [115,  65,  24, 20, 'yellow'],
   ],
-  [
-    [80, 550, 50, 24, stageFourBlockCol],
-    [120, 420, 50, 24,stageFourBlockCol],
-    [400, 420, 50, 24,  stageFourBlockCol],
-    [550, 300, 100, 24, stageFourBlockCol],
-    [520, 170, 50, 24, stageFourBlockCol],
-    [520, 40, 50, 24, stageFourBlockCol],
-  ]
 ];
 
 let player = null;
@@ -221,7 +208,7 @@ class Player {
   }
 
   detectCollisionY(block, index) {
-    if ((this.speedY > 0) && this.isOnTheBlock(block)) {
+    if ((this.speedY > 0 ) && this.isOnTheBlock(block)) {
       this.y = block.y - block.h/2 - this.s/2;
       this.speedY = 0;
       this.speedX = 0;
@@ -229,7 +216,7 @@ class Player {
       this.judgeClear(index);
     }
     
-    if ((this.speedY == 0) && this.isDroppedFromBlock(block)) this.isJumping = true;
+    if ((this.speedY === 0) && this.isDroppedFromBlock(block)) this.isJumping = true;
 
     if (this.isCollideWithCeiling(block) && (this.speedY < 0)) {
       this.speedY *= -1;
@@ -243,7 +230,7 @@ class Player {
 
   judgeClear(blockIndex) {
     console.log(blockIndex);
-    if (gameState == 3 && blockIndex === 17) {
+    if (gameState == 3 && blockIndex === 13) {
       fill('yellow');
       textSize(64);
       stroke(0);
@@ -293,7 +280,7 @@ class Player {
 
   isCollideWithCeiling(block) {
     if ((this.x > block.x - block.w/2) && (this.x < block.x + block.w/2)) {
-      if (this.calcYDistanceFromCeiling(block) < 10) {
+      if (this.calcYDistanceFromCeiling(block) < 8) {
         return true;
       }
     }
