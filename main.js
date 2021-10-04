@@ -24,17 +24,14 @@ const blocksInfo = [
   [
     [580, 574,  40, 20, 'white'],
     [320, 540,  24, 20, stageThreeBlockCol],
-
     [ 90, 440,  26, 20, stageThreeBlockCol],
     [ 20, 330,  24, 20, stageThreeBlockCol],
     [140, 350,  30, 40, stageThreeBlockCol],
-
     [550, 450,  24, 20, stageThreeBlockCol],
     [460, 320,  24, 20, stageThreeBlockCol],
     [520, 310,  60, 20, stageThreeBlockCol],
     [580, 322,  24, 20, stageThreeBlockCol],
     [520, 200,  24, 20, stageThreeBlockCol],
-
     [300, 240,  44, 40, stageThreeBlockCol],
     [ 55, 200,  32, 40, stageThreeBlockCol],
     [235,  75,  24, 20, stageThreeBlockCol],
@@ -47,7 +44,8 @@ let blocks = new Array(blocksInfo.length).fill(null);
 let stageImages = new Array(3).fill(null);
 let imagePaths = ['./public/img/slope.png', './public/img/eng_front.png', './public/img/labo.jpg'];
 let tsukakenLogo = null;
-let gameState = 0;
+let isGameStart = false;
+let stageNum = 0;
 let jumpSound = null;
 let gameStartSound = null;
 let clearSound = null;
@@ -69,8 +67,8 @@ function preload() {
 function setup() {
   createCanvas(600, 600);
   rectMode(CENTER);
-  textAlign(CENTER);
-  player = new Player(width/2, height-20, 20);
+  textAlign(CENTER, CENTER);
+  player = new Player(width/2, height, 40);
   blocks.forEach((_v, i) => {
     blocks[i] = new Array(blocksInfo[i].length).fill(null).map((_v, j) => ( new Block(...blocksInfo[i][j]) ));
   });
@@ -78,13 +76,13 @@ function setup() {
 
 //draw and update game
 function draw() {
-  if (gameState === 0) {
+  if (!isGameStart) {
     drawStartScene();
     return;
   }
 
   switchGameState();
-  drawGameScene(gameState);
+  drawGameScene();
   player.update();
   player.draw();
   drawTime();
@@ -96,29 +94,37 @@ function drawStartScene() {
     textFont('arial black');
     fill(255);
     textSize(64);
-    text("TOZAN KING", width/2, height/2 - 20);
+    text("TOZAN KING", width/2, height/2);
     textSize(24);
     textFont('Impact');
-    text("- press space to start -", width/2, height/2 + 20);
+    text("- press space to start -", width/2, height/2 + 40);
     fill(0);
+}
+
+function drawStage() {
+  image(stageImages[stageNum], 0, 0, width, height);
+  fill('gray');
+  rect(0, height/2, 20, height);
+  rect(width, height/2, 20, height);
+  if (stageNum === 0) rect(width/2, height, width, 20);
 }
 
 function drawGameScene() {
   drawStage();
-  blocks[gameState-1].forEach((block, i) => {
+  blocks[stageNum].forEach((block, i) => {
     block.draw();
     player.detectCollision(block, i);
   });
-  if (gameState === 3) image(tsukakenLogo, 100, 12, 40, 40);
+  if (stageNum === 2) image(tsukakenLogo, 100, 12, 40, 40);
 }
 
 function switchGameState() {
-  if (player.y < 0 && gameState !== 3) {
-    gameState++;
-    player.y = height - player.y - player.s;
-  } else if(player.y > height-20) {
-    gameState--;
-    player.y = 20;
+  if (player.y - player.s/2 < 0 && stageNum !== 2) {
+    stageNum++;
+    player.y = height - player.y - player.s/2;
+  } else if(player.y  > height) {
+    stageNum--;
+    player.y = height - player.s;
   }
 }
 
@@ -129,7 +135,7 @@ function drawTime() {
   stroke(0);
   rect(width-100, 30, 120, 40);
   fill(0);
-  text(`${secToDisplayTime(ellapsedSec)}`, width-100, 40);
+  text(`${secToDisplayTime(ellapsedSec)}`, width-100, 30);
 }
 
 
@@ -143,27 +149,19 @@ function secToDisplayTime(sec) {
 }
 
 
-function drawStage() {
-  const stageNum = gameState - 1;
-  image(stageImages[stageNum], 0, 0, width, height);
-  fill('gray');
-  rect(0, height/2, 20, height);
-  rect(width, height/2, 20, height);
-  if (gameState === 1) rect(width/2, height, width, 20);
-}
 
 class Player {
-  constructor(x, y, s) {
+  constructor(x, y, size) {
     this.x = x;
     this.y = y;
-    this.s = s;
+    this.s = size;
     this.speedX = 0;
     this.speedY = 0;
     this.isJumping = false;
   }
 
   draw() {
-    textSize(this.s * 2);
+    textSize(this.s);
     this.isJumping ? text("🕺", this.x, this.y) : text("🚶", this.x, this.y);
   }
 
@@ -171,7 +169,7 @@ class Player {
     this.x += this.speedX;
     this.y += this.speedY;
    
-    if (gameState === 1 && this.y + this.s > height) {
+    if (stageNum === 0 && this.y + this.s > height) {
       this.y = height - this.s;
       this.speedY = 0;
       if (this.isJumping) {
@@ -180,7 +178,7 @@ class Player {
       }
     }
 
-    if (gameState === 3 && this.y - this.s < 0) {
+    if (stageNum === 2 && this.y - this.s < 0) {
       this.speedY *-1;
     }
 
@@ -229,8 +227,7 @@ class Player {
   }
 
   judgeClear(blockIndex) {
-    console.log(blockIndex);
-    if (gameState == 3 && blockIndex === 13) {
+    if (stageNum == 2 && blockIndex === 13) {
       fill('yellow');
       textSize(64);
       stroke(0);
@@ -327,9 +324,9 @@ class Block {
 
 // keyEvent functions
 function keyPressed() {
-  if (gameState === 0 && keyCode === 32) {
-      gameState = 1;
-      gameStartSound.play();
+  if (!isGameStart && keyCode === 32) {
+    isGameStart = true;
+    gameStartSound.play();
   } else {
     if (player.isJumping) return;
     if (keyCode === 32) {
@@ -343,6 +340,6 @@ function keyPressed() {
 }
 
 function keyReleased() {
-  if (gameState !== 0 && player.isJumping) return;
+  if (!isGameStart || player.isJumping) return;
   player.speedX = 0;
 }
