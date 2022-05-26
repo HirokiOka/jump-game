@@ -9,7 +9,7 @@ const blocksInfo = [
     [480, 400, 120,  48, stageOneBlockCol],
     [180, 320, 120,  48, stageOneBlockCol],
     [ 30, 300,  40,  48, stageOneBlockCol],
-    [120, 160, 120,  48, stageOneBlockCol],
+    [140, 160, 120,  48, stageOneBlockCol],
     [410,  60, 120,  48, stageOneBlockCol],
   ],
   [
@@ -122,7 +122,7 @@ function switchGameState() {
   if (player.y - player.s/2 < 0 && stageNum !== 2) {
     stageNum++;
     player.y = height - player.y - player.s/2;
-  } else if(player.y  > height) {
+  } else if(player.y + player.s/2  < 0) {
     stageNum--;
     player.y = height - player.s;
   }
