@@ -525,14 +525,18 @@ function keyPressed() {
       gameState = 1;
       gameStartSound.play();
   } else {
+    if (keyCode === 13) {
+      player.jump();
+      jumpSound.play();
+    }
+    if (keyCode === RIGHT_ARROW) player.speedX += 2;
+    if (keyCode === LEFT_ARROW) player.speedX -= 2;
     if (player.isJumping) return;
     if (keyCode === 32) {
       player.jump();
       jumpSound.play();
     }
 
-    if (keyCode === RIGHT_ARROW) player.speedX += 2;
-    if (keyCode === LEFT_ARROW) player.speedX -= 2;
   }
 }
 
