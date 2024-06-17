@@ -107,9 +107,9 @@ function preload() {
   slopeImg = loadImage('./public/img/slope.png');
   shindaiImg = loadImage('./public/img/eng_front.png');
   laboImg = loadImage('./public/img/labo.jpg');
-  tsukakenImg = loadImage('./public/img/tsukaken.png');
   proroomImg = loadImage('./public/img/senseibeya.jpg');
   */
+  tsukakenImg = loadImage('./public/img/tsukaken.png');
 
   jumpSound = new Audio();
   jumpSound.src = './public/sound/jump_sound.mp3';
