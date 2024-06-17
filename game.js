@@ -118,14 +118,24 @@ let stageFiveBlocks = [];
 let slopeImg = null;
 let shindaiImg = null;
 let tsukakenImg = null;
+let titleImg = null;
 let gameState = 0;
 let isDebug = false;
 let jumpSound = null;
 let gameStartSound = null;
 let clearSound = null;
+let pixelFont = null;
 
 //load assets before rendering
 function preload() {
+  titleImg = loadImage('./public/img/tozan_king_title.png');
+  stageOneImg = loadImage('./public/img/stage_one.png');
+  stageTwoImg = loadImage('./public/img/stage_two.png');
+  stageThreeImg = loadImage('./public/img/stage_three.png');
+  stageFourImg = loadImage('./public/img/stage_four.png');
+
+  pixelFont = loadFont('./public/font/PixelMplus10-Regular.ttf');
+  
   slopeImg = loadImage('./public/img/slope.png');
   shindaiImg = loadImage('./public/img/eng_front.png');
   laboImg = loadImage('./public/img/labo.jpg');
@@ -142,7 +152,8 @@ function preload() {
 
 //initialize HTML canvas and game objects
 function setup() {
-  createCanvas(600, 600);
+  const cnv = createCanvas(600, 600);
+  cnv.style('display', 'block');
   rectMode(CENTER);
   textAlign(CENTER);
   player = new Player(width/2, height-20, 20);
@@ -160,10 +171,18 @@ function setup() {
   ));
 }
 
-//draw and update game
+//Draw and update game
 function draw() {
+  const fc = frameCount;
   if (gameState === 0) {
-    drawStartScene();
+    image(titleImg, 0, 0, width, height);
+    fill('white');
+    textSize(38);
+    textFont(pixelFont);
+    if (fc % 60 < 30) {
+      text("- press space to start -", width/2, height/2 + 20);
+    }
+    textFont('arial black');
     return;
   }
 
@@ -188,12 +207,14 @@ function drawStartScene() {
     textSize(24);
     textFont('Impact');
     text("- press space to start -", width/2, height/2 + 20);
-    fill(0);
+    fill(0)
+    //image(titleImg, 0, 0, width, height);
 }
 
 function drawGameScene(stage) {
   if (stage === 1) {
     drawStageOne();
+    //drawStageName(stage);
     stageOneBlocks.forEach((block, i) => {
       fill('#3A2012');
       block.draw();
@@ -221,6 +242,7 @@ function drawGameScene(stage) {
       player.detectCollision(block, i);
     });
   }
+  drawEdge(stage);
 }
 
 function switchGameState() {
@@ -243,23 +265,22 @@ function switchGameState() {
     gameState = 3;
     player.y = 20;
   } 
-  // else if ((gameState === 4) && player.y < 0) {
-  //   gameState = 5;
-  //   player.y = height - player.y - player.s;
-  // } else if ((gameState === 5) && (player.y > height-20)) {
-  //   gameState = 4;
-  //   player.y = 20;
-  // }
 }
 
 function drawTime() {
   let ellapsedSec = floor(frameCount / 60); 
-  textSize(24);
+  const RPAD = 80;
+
+  strokeWeight(4);
   fill(255);
-  stroke(0);
-  rect(width-100, 30, 120, 40);
+  rect(width-RPAD, 30, 120, 40);
+  textSize(24);
   fill(0);
-  text(`${secToMin(ellapsedSec)}`, width-100, 40);
+  strokeWeight(1);
+  stroke(0);
+  textFont(pixelFont);
+  text(`${secToMin(ellapsedSec)}`, width-RPAD, 40);
+  textFont('arial black');
 }
 
 function secToMin(sec) {
@@ -272,38 +293,60 @@ function secToMin(sec) {
 }
 
 function drawStageOne() {
+  image(stageOneImg, 0, 0, width, height);
+  fill(0);
+  stroke(0);
+  //textFont(pixelFont);
   noStroke();
   fill('#3A2012');
-  image(slopeImg, 0, 0, width, height);
-  rect(width/2, height, width, 20);
-  rect(0, height/2, 20, height);
-  rect(width, height/2, 20, height);
-  //image(tsukakenImg, 250, 450, 40, 40);
+  //image(slopeImg, 0, 0, width, height);
 }
 
 function drawStageTwo() {
+  image(stageTwoImg, 0, 0, width, height);
   stroke(0);
   fill('#99FF00');
-  image(shindaiImg, 0, 0, width, height);
-  rect(0, height/2, 20, height);
-  rect(width, height/2, 20, height);
+  //image(shindaiImg, 0, 0, width, height);
 }
 
 function drawStageThree() {
+  image(stageThreeImg, 0, 0, width, height);
   stroke(0);
   fill('#99CCFF');
-  image(laboImg, 0, 0, width, height);
-  rect(0, height/2, 20, height);
-  rect(width, height/2, 20, height);
+  //image(laboImg, 0, 0, width, height);
 }
 
 function drawStageFour() {
   stroke(0);
   fill('#FFCC00');
-  image(proroomImg, 0, 0, width, height);
+  image(stageFourImg, 0, 0, width, height);
+  //image(proroomImg, 0, 0, width, height);
+  image(tsukakenImg, 250, 450, 40, 40);
+}
+
+function drawEdge(stage) {
+  noStroke();
+  fill('#99FF00');
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
-  image(tsukakenImg, 250, 450, 40, 40);
+  if (stage === 1) {
+    rect(width/2, height, width, 20);
+  }
+  stroke(0);
+}
+
+function drawStageName(stage) {
+  const LPAD = 80;
+  strokeWeight(4);
+  fill(255);
+  rect(LPAD, 30, 120, 40);
+  textSize(24);
+  fill(0);
+  strokeWeight(1);
+  stroke(0);
+  textFont(pixelFont);
+  text('中腹', width-LPAD, 40);
+  textFont('arial black');
 }
 
 class Player {
@@ -467,7 +510,12 @@ class Block {
   }
   draw() {
     if (this.isVisible === false) noFill();
-    rect(this.x, this.y, this.w, this.h, 5);
+    strokeWeight(4);
+    stroke('green');
+    rect(this.x, this.y, this.w, this.h);
+    noStroke();
+    strokeWeight(1);
+    stroke(0);
   }
 }
 
