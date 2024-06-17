@@ -94,10 +94,10 @@ const stageThreeBlocksInfo = [
   [105,  45,  30, 30, true],
 ];
 
+  //[320, 100, 240, 20, true],
 const stageFourBlocksInfo = [
   [220, 410,  40, 380, true],
   [420, 400,  40, 400, true],
-  [320, 100, 240, 20, true],
 
   [115, 520, 40,  20, true],
   [ 80, 380, 40,  20, true],
@@ -176,13 +176,16 @@ function draw() {
   const fc = frameCount;
   if (gameState === 0) {
     image(titleImg, 0, 0, width, height);
-    fill('white');
     textSize(38);
     textFont(pixelFont);
+    fill('white');
+    strokeWeight(4);
+    stroke('black');
     if (fc % 60 < 30) {
       text("- press space to start -", width/2, height/2 + 20);
     }
     textFont('arial black');
+    strokeWeight(1);
     return;
   }
 
@@ -191,10 +194,24 @@ function draw() {
   player.update();
   player.draw();
   drawTime();
+  drawHowToPlay();
   if (gameState === 4) {
     const distance = dist(player.x, player.y, 250+20, 450+20);
     if (distance < 20) player.judgeClear();
   }
+}
+
+function drawHowToPlay() {
+  fill(0);
+  stroke('white');
+  textFont(pixelFont);
+  textSize(18);
+  if (isDebug) {
+    text('Debug', width/2 + 220, height - 60);
+  }
+  text('space: ジャンプ', width/2 + 220, height - 40);
+  text('左右キー: 移動', width/2 + 220, height - 20);
+  textFont('arial black');
 }
 
 //global functions in draw
@@ -214,7 +231,6 @@ function drawStartScene() {
 function drawGameScene(stage) {
   if (stage === 1) {
     drawStageOne();
-    //drawStageName(stage);
     stageOneBlocks.forEach((block, i) => {
       fill('#3A2012');
       block.draw();
@@ -242,6 +258,7 @@ function drawGameScene(stage) {
       player.detectCollision(block, i);
     });
   }
+  drawStageName(stage);
   drawEdge(stage);
 }
 
@@ -336,16 +353,19 @@ function drawEdge(stage) {
 }
 
 function drawStageName(stage) {
+  const stageNames = ['登山口', '斜面', '中腹', '山頂'];
+  const currentStageName = stageNames[stage-1];
   const LPAD = 80;
-  strokeWeight(4);
   fill(255);
-  rect(LPAD, 30, 120, 40);
+  strokeWeight(4);
+  rect(LPAD, 30, 120, 40, 4);
+  strokeWeight(1);
   textSize(24);
   fill(0);
-  strokeWeight(1);
   stroke(0);
   textFont(pixelFont);
-  text('中腹', width-LPAD, 40);
+  
+  text(currentStageName, LPAD, 40);
   textFont('arial black');
 }
 
@@ -526,16 +546,15 @@ function keyPressed() {
       gameStartSound.play();
   } else {
     if (keyCode === 13) {
+      isDebug = !isDebug;
+    }
+    if (!isDebug && player.isJumping) return;
+    if (keyCode === 32) {
       player.jump();
       jumpSound.play();
     }
     if (keyCode === RIGHT_ARROW) player.speedX += 2;
     if (keyCode === LEFT_ARROW) player.speedX -= 2;
-    if (player.isJumping) return;
-    if (keyCode === 32) {
-      player.jump();
-      jumpSound.play();
-    }
 
   }
 }
