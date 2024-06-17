@@ -1,67 +1,67 @@
 const gravity = 0.06;
+let isClear = false;
 let fc = 0;
 const stageOneBlocksInfo = [
-  //centerX, centerY, width
+  //centerX, centerY, width, isVisible
   [200, 550, 120, 100, true],
   [480, 420, 120,  48, true],
-  [190, 310, 120,  48, true],
-  [ 30, 290,  50,  48, true],
-  [120, 160, 120,  48, true],
+  [210, 310, 120,  32, true],
+  [ 30, 280,  60,  32, true],
+  [420, 220,  84,  32, true],
+  [140, 160, 120,  32, true],
   [410,  60, 120,  48, true],
 ];
 
 const stageTwoBlocksInfo = [
   [540, 530, 100, 48, true],
-  [220, 450, 100, 48, true],
+  [240, 450, 100, 48, true],
   [220, 200, 100, 48, true],
   [ 20, 325,  80, 48, true],
   [ 60, 100,  20, 48, true],
-  [340, 100,  20, 18, true],
-  [580,  70,  20, 18, true],
+  [340, 100,  24, 24, true],
+  [560,  70,  48, 24, true],
   [ 60,   0,  20,  1, false],
-  //-----------------------------
-  // [200, 300,  40, 200, true],
-  // [400, 300,  40, 200, true],
-
-  // [115, 520, 40,  20, true],
 ];
 
 const stageThreeBlocksInfo = [
-  [320, 590,  20, 20, true],
-  [330, 570,   1, 60, false],
-  [575, 580,  20, 20, true],
-  [320, 540,  20, 20, true],
+  [320, 600,  20, 20, true],
+  //[330, 570,   1, 60, false],
+  [575, 580,  48, 20, true],
+  [320, 540,  48, 20, true],
 
   [100, 440,  20, 20, true],
   [ 20, 310,  20, 40, true],
-  [130, 310,  20, 20, true],
+  [130, 310,  80, 20, true],
 
-  [540, 440,   1, 60, false],
+  //[540, 440,   1, 60, false],
   [550, 460,  20, 30, true],
-  [460, 320,  20, 20, true],
-  [520, 320,  20, 20, true],
+  [340, 360,  60, 20, true],
+  //[520, 320,  20, 20, true],
   [580, 320,  20, 20, true],
   [520, 200,  20, 20, true],
 
-  [310, 190,  20, 20, true],
-  [170, 180,  20, 20, true],
-  [ 60, 170,  20, 20, true],
+  [310, 190,  80, 20, true],
+  [170, 180,  60, 20, true],
+  [ 40, 170,  80, 20, true],
   [240,  36,  20, 40, true],
-  [105,  45,  30, 30, true],
+  [120,  100,  60, 20, true],
+  //[105,  45,  30, 30, true],
 ];
 
 const stageFourBlocksInfo = [
   [220, 410,  40, 380, true],
   [420, 400,  40, 400, true],
 
-  [115, 520, 40,  20, true],
-  [ 80, 380, 40,  20, true],
+  [20, 550, 100, 20, true],
+  [160, 500, 60, 20, true],
+  [ 80, 380, 60,  20, true],
   [180, 370, 40,  20, true],
   [ 50, 250, 40,  20, true], 
   [180, 260, 40,  20, true],
   [180, 150, 40,  20, true],
 
   [540, 290, 40,  20, true],
+  [340, 300, 60,  20, true],
 ];
 
 let player = null;
@@ -100,8 +100,10 @@ function preload() {
   stageTwoImg = loadImage('./public/img/stage_two.png');
   stageThreeImg = loadImage('./public/img/stage_three.png');
   stageFourImg = loadImage('./public/img/stage_four.png');
+  tsukakenImg = loadImage('./public/img/tsukaken.png');
 
   pixelFont = loadFont('./public/font/PixelMplus10-Regular.ttf');
+<<<<<<< HEAD
   
   /*
   slopeImg = loadImage('./public/img/slope.png');
@@ -111,6 +113,8 @@ function preload() {
   */
   tsukakenImg = loadImage('./public/img/tsukaken.png');
 
+=======
+>>>>>>> dev
   jumpSound = new Audio();
   jumpSound.src = './public/sound/jump_sound.mp3';
   gameStartSound = new Audio();
@@ -125,7 +129,8 @@ function setup() {
   cnv.style('display', 'block');
   rectMode(CENTER);
   textAlign(CENTER);
-  player = new Player(width/2, height-20, 20);
+  const playerSize = 28;
+  player = new Player(width/2, height-playerSize, playerSize);
   stageOneBlocks = new Array(stageOneBlocksInfo.length).fill(null).map((_v, i) => (
     new Block(stageOneBlocksInfo[i][0], stageOneBlocksInfo[i][1], stageOneBlocksInfo[i][2], stageOneBlocksInfo[i][3], stageOneBlocksInfo[i][4])
   ));
@@ -256,16 +261,17 @@ function switchGameState() {
 function drawTime() {
   let ellapsedSec = floor(frameCount / 60); 
   const RPAD = 80;
+  const RectH = 40;
 
   strokeWeight(4);
   fill(255);
-  rect(width-RPAD, 30, 120, 40);
+  rect(width-RPAD, 30, 120, RectH);
   textSize(24);
   fill(0);
   strokeWeight(1);
   stroke(0);
   textFont(pixelFont);
-  text(`${secToMin(ellapsedSec)}`, width-RPAD, 40);
+  text(`${secToMin(ellapsedSec)}`, width-RPAD, RectH);
   textFont('arial black');
 }
 
@@ -282,31 +288,25 @@ function drawStageOne() {
   image(stageOneImg, 0, 0, width, height);
   fill(0);
   stroke(0);
-  //textFont(pixelFont);
-  noStroke();
   fill('#3A2012');
-  //image(slopeImg, 0, 0, width, height);
 }
 
 function drawStageTwo() {
   image(stageTwoImg, 0, 0, width, height);
   stroke(0);
   fill('#99FF00');
-  //image(shindaiImg, 0, 0, width, height);
 }
 
 function drawStageThree() {
   image(stageThreeImg, 0, 0, width, height);
   stroke(0);
   fill('#99CCFF');
-  //image(laboImg, 0, 0, width, height);
 }
 
 function drawStageFour() {
   stroke(0);
   fill('#FFCC00');
   image(stageFourImg, 0, 0, width, height);
-  //image(proroomImg, 0, 0, width, height);
   image(tsukakenImg, 250, 450, 40, 40);
 }
 
@@ -322,7 +322,7 @@ function drawEdge(stage) {
 }
 
 function drawStageName(stage) {
-  const stageNames = ['登山口', '斜面', '中腹', '山頂'];
+  const stageNames = ['登山口', '急斜面', '中腹', '山頂'];
   const currentStageName = stageNames[stage-1];
   const LPAD = 80;
   fill(255);
@@ -350,18 +350,16 @@ class Player {
   }
 
   draw() {
-    const drawSize = this.s;
     const frameDelay = 20;
-    let currentIdx = 0;
-    if (fc % frameDelay === 0) {
+    if (fc % frameDelay === 0 && this.speedX !== 0) {
       this.currentFrame = (this.currentFrame + 1) % 3;
     }
     if (isLeft) {
-      image(tsukaboImagesLeft[this.currentFrame] , this.x, this.y-this.s/2, drawSize, drawSize);
+      image(tsukaboImagesLeft[this.currentFrame], this.x - this.s, this.y - this.s-4, this.s*2, this.s*2);
     } else {
-      image(tsukaboImagesRight[this.currentFrame] , this.x, this.y-this.s/2 , drawSize, drawSize);
+      image(tsukaboImagesRight[this.currentFrame] , this.x - this.s, this.y - this.s-4, this.s*2, this.s*2);
     }
-    //rect(this.x, this.y, this.s, this.s);
+    //rect(this.x, this.y, 32, 32);
   }
 
   update() {
@@ -430,7 +428,11 @@ class Player {
       stroke(0);
       textFont(pixelFont);
       text('CLEAR!', width/2, height/2);
+      textSize(32);
+      fill('white');
+      text('ENTERでタイトルに戻る', width/2, height/2+64);
       clearSound.play();
+      isClear = true;
       noLoop();
   }
 
@@ -528,6 +530,7 @@ function keyPressed() {
   } else {
     if (keyCode === 13) {
       isDebug = !isDebug;
+      if (isClear) window.location.reload();
     }
     if (!isDebug && player.isJumping) return;
     if (keyCode === 32) {
