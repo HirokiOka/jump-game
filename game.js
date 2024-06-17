@@ -103,18 +103,8 @@ function preload() {
   tsukakenImg = loadImage('./public/img/tsukaken.png');
 
   pixelFont = loadFont('./public/font/PixelMplus10-Regular.ttf');
-<<<<<<< HEAD
-  
-  /*
-  slopeImg = loadImage('./public/img/slope.png');
-  shindaiImg = loadImage('./public/img/eng_front.png');
-  laboImg = loadImage('./public/img/labo.jpg');
-  proroomImg = loadImage('./public/img/senseibeya.jpg');
-  */
   tsukakenImg = loadImage('./public/img/tsukaken.png');
 
-=======
->>>>>>> dev
   jumpSound = new Audio();
   jumpSound.src = './public/sound/jump_sound.mp3';
   gameStartSound = new Audio();
