@@ -1,57 +1,13 @@
 const gravity = 0.06;
+let fc = 0;
 const stageOneBlocksInfo = [
   //centerX, centerY, width
   [200, 550, 120, 100, true],
-  [480, 400, 120,  48, true],
-  [180, 290, 120,  48, true],
-  [ 30, 300,  50,  48, true],
+  [480, 420, 120,  48, true],
+  [190, 310, 120,  48, true],
+  [ 30, 290,  50,  48, true],
   [120, 160, 120,  48, true],
   [410,  60, 120,  48, true],
-  //-----------------------------
-  // [540, 530, 100, 48, true],
-  // [220, 450, 100, 48, true],
-  // [220, 200, 100, 48, true],
-  // [ 20, 325,  80, 48, true],
-  // [ 60, 100,  20, 48, true],
-  // [340, 100,  20, 18, true],
-  // [580,  70,  20, 18, true],
-  // [ 60,   0,  20,  1, false],
-  //-----------------------------
-  // [320, 590,  20, 20, true],
-  // [330, 570,   1, 60, false],
-  // [575, 580,  20, 20, true],
-  // [320, 540,  20, 20, true],
-
-  // [100, 440,  20, 20, true],
-  // [ 20, 310,  20, 40, true],
-  // [130, 310,  20, 20, true],
-
-  // [540, 440,   1, 60, false],
-  // [550, 460,  20, 30, true],
-  // [460, 320,  20, 20, true],
-  // [520, 320,  20, 20, true],
-  // [580, 320,  20, 20, true],
-  // [520, 200,  20, 20, true],
-
-  // [310, 190,  20, 20, true],
-  // [170, 180,  20, 20, true],
-  // [ 60, 170,  20, 20, true],
-  // [240,  36,  20, 40, true],
-  // [105,  45,  30, 30, true],
-  //---------------------------
-  // [220, 300,  40, 200, true],
-  // [220, 410,  40, 380, true],
-  // [420, 400,  40, 400, true],
-  // [320, 100, 240, 20, true],
-
-  // [115, 520, 40,  20, true],
-  // [ 80, 380, 40,  20, true],
-  // [180, 370, 40,  20, true],
-  // [ 50, 250, 40,  20, true], 
-  // [180, 260, 40,  20, true],
-  // [180, 150, 40,  20, true],
-
-  // [540, 290, 40,  20, true],
 ];
 
 const stageTwoBlocksInfo = [
@@ -94,7 +50,6 @@ const stageThreeBlocksInfo = [
   [105,  45,  30, 30, true],
 ];
 
-  //[320, 100, 240, 20, true],
 const stageFourBlocksInfo = [
   [220, 410,  40, 380, true],
   [420, 400,  40, 400, true],
@@ -125,9 +80,21 @@ let jumpSound = null;
 let gameStartSound = null;
 let clearSound = null;
 let pixelFont = null;
+let tsukaboImagesLeft = [];
+let tsukaboImagesRight = [];
+let isLeft = true;
 
 //load assets before rendering
 function preload() {
+
+  tsukaboImagesLeft[0] = loadImage('./public/img/tsukabo_left_1.png');
+  tsukaboImagesLeft[1] = loadImage('./public/img/tsukabo_left_2.png');
+  tsukaboImagesLeft[2] = loadImage('./public/img/tsukabo_left_3.png');
+
+  tsukaboImagesRight[0] = loadImage('./public/img/tsukabo_right_1.png');
+  tsukaboImagesRight[1] = loadImage('./public/img/tsukabo_right_2.png');
+  tsukaboImagesRight[2] = loadImage('./public/img/tsukabo_right_3.png');
+
   titleImg = loadImage('./public/img/tozan_king_title.png');
   stageOneImg = loadImage('./public/img/stage_one.png');
   stageTwoImg = loadImage('./public/img/stage_two.png');
@@ -136,11 +103,13 @@ function preload() {
 
   pixelFont = loadFont('./public/font/PixelMplus10-Regular.ttf');
   
+  /*
   slopeImg = loadImage('./public/img/slope.png');
   shindaiImg = loadImage('./public/img/eng_front.png');
   laboImg = loadImage('./public/img/labo.jpg');
   tsukakenImg = loadImage('./public/img/tsukaken.png');
   proroomImg = loadImage('./public/img/senseibeya.jpg');
+  */
 
   jumpSound = new Audio();
   jumpSound.src = './public/sound/jump_sound.mp3';
@@ -173,7 +142,7 @@ function setup() {
 
 //Draw and update game
 function draw() {
-  const fc = frameCount;
+  fc = parseInt(frameCount, 10);
   if (gameState === 0) {
     image(titleImg, 0, 0, width, height);
     textSize(38);
@@ -377,11 +346,22 @@ class Player {
     this.speedX = 0;
     this.speedY = 0;
     this.isJumping = false;
+    this.currentFrame = 0;
   }
 
   draw() {
-    textSize(this.s * 2);
-    this.isJumping ? text("🕺", this.x, this.y) : text("🚶", this.x, this.y);
+    const drawSize = this.s;
+    const frameDelay = 20;
+    let currentIdx = 0;
+    if (fc % frameDelay === 0) {
+      this.currentFrame = (this.currentFrame + 1) % 3;
+    }
+    if (isLeft) {
+      image(tsukaboImagesLeft[this.currentFrame] , this.x, this.y-this.s/2, drawSize, drawSize);
+    } else {
+      image(tsukaboImagesRight[this.currentFrame] , this.x, this.y-this.s/2 , drawSize, drawSize);
+    }
+    //rect(this.x, this.y, this.s, this.s);
   }
 
   update() {
@@ -448,6 +428,7 @@ class Player {
       fill('yellow');
       textSize(64);
       stroke(0);
+      textFont(pixelFont);
       text('CLEAR!', width/2, height/2);
       clearSound.play();
       noLoop();
@@ -530,7 +511,7 @@ class Block {
   }
   draw() {
     if (this.isVisible === false) noFill();
-    strokeWeight(4);
+    strokeWeight(1);
     stroke('green');
     rect(this.x, this.y, this.w, this.h);
     noStroke();
@@ -553,8 +534,14 @@ function keyPressed() {
       player.jump();
       jumpSound.play();
     }
-    if (keyCode === RIGHT_ARROW) player.speedX += 2;
-    if (keyCode === LEFT_ARROW) player.speedX -= 2;
+    if (keyCode === RIGHT_ARROW) {
+      player.speedX += 2;
+      isLeft = false;
+    } 
+    if (keyCode === LEFT_ARROW) {
+      player.speedX -= 2;
+      isLeft = true;
+    }
 
   }
 }
