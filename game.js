@@ -1,7 +1,7 @@
 const gravity = 0.06;
 let fc = 0;
 const stageOneBlocksInfo = [
-  //centerX, centerY, width
+  //centerX, centerY, width, isVisible
   [200, 550, 120, 100, true],
   [480, 420, 120,  48, true],
   [190, 310, 120,  48, true],
@@ -100,17 +100,9 @@ function preload() {
   stageTwoImg = loadImage('./public/img/stage_two.png');
   stageThreeImg = loadImage('./public/img/stage_three.png');
   stageFourImg = loadImage('./public/img/stage_four.png');
+  tsukakenImg = loadImage('./public/img/tsukaken.png');
 
   pixelFont = loadFont('./public/font/PixelMplus10-Regular.ttf');
-  
-  /*
-  slopeImg = loadImage('./public/img/slope.png');
-  shindaiImg = loadImage('./public/img/eng_front.png');
-  laboImg = loadImage('./public/img/labo.jpg');
-  tsukakenImg = loadImage('./public/img/tsukaken.png');
-  proroomImg = loadImage('./public/img/senseibeya.jpg');
-  */
-
   jumpSound = new Audio();
   jumpSound.src = './public/sound/jump_sound.mp3';
   gameStartSound = new Audio();
