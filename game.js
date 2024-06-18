@@ -1,6 +1,4 @@
 const gravity = 0.06;
-let isClear = false;
-let fc = 0;
 const stageOneBlocksInfo = [
   //centerX, centerY, width, isVisible
   [200, 550, 120, 100, true],
@@ -64,6 +62,8 @@ const stageFourBlocksInfo = [
   [340, 300, 60,  20, true],
 ];
 
+let isClear = false;
+let fc = 0;
 let player = null;
 let stageOneBlocks = [];
 let stageTwoBlocks = [];
@@ -78,6 +78,8 @@ let gameState = 0;
 let isDebug = false;
 let jumpSound = null;
 let gameStartSound = null;
+let interestingSound = null;
+let badSound = null;
 let clearSound = null;
 let pixelFont = null;
 let tsukaboImagesLeft = [];
@@ -111,6 +113,10 @@ function preload() {
   gameStartSound.src = './public/sound/game_start.mp3';
   clearSound = new Audio();
   clearSound.src = './public/sound/clear.mp3';
+  interestingSound = new Audio();
+  interestingSound.src = './public/sound/interesting.mp3';
+  badSound = new Audio();
+  badSound.src = './public/sound/bad.mp3';
 }
 
 //initialize HTML canvas and game objects
@@ -376,6 +382,9 @@ class Player {
       this.x = this.s;
       if (this.speedY !== 0) this.speedX *= -1;
     }
+
+    console.log(this.speedY)
+    if (this.speedY > 9) badSound.play();
   }
 
   jump() {
@@ -422,6 +431,7 @@ class Player {
       fill('white');
       text('ENTERでタイトルに戻る', width/2, height/2+64);
       clearSound.play();
+      interestingSound.play();
       isClear = true;
       noLoop();
   }
