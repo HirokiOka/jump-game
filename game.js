@@ -143,6 +143,8 @@ let isDebug = false;
 let jumpSound = null;
 let gameStartSound = null;
 let interestingSound = null;
+let credOpenSound = null;
+let credCloseSound = null;
 let badSound = null;
 let clearSound = null;
 let pixelFont = null;
@@ -180,6 +182,10 @@ function preload() {
   interestingSound.src = './public/sound/interesting.mp3';
   badSound = new Audio();
   badSound.src = './public/sound/bad.mp3';
+  credOpenSound = new Audio();
+  credOpenSound.src = './public/sound/cred_open.mp3';
+  credCloseSound = new Audio();
+  credCloseSound.src = './public/sound/cred_close.mp3';
 }
 
 //initialize HTML canvas and game objects
@@ -621,7 +627,13 @@ class Block {
 // keyEvent functions
 function keyPressed() {
   if (gameState === 0 && keyCode === 67) {
+    if (showCredits) {
+      credCloseSound.play();
+    } else {
+      credOpenSound.play();
+    }
     showCredits = !showCredits;
+    
   }
   if (gameState === 0 && keyCode === 32) {
       gameState = 1;
