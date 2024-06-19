@@ -1,6 +1,7 @@
 const gravity = 0.06;
 const BLOCK_WIDTH = 40;
 const BLOCK_HEIGHT = 40;
+let showCredits = false;
 /*
 const stageOneBlocksInfo = [
   //centerX, centerY, width, isVisible
@@ -14,7 +15,7 @@ const stageOneBlocksInfo = [
 ];
 */
 const stageOneBlocksInfo = [
-  [200, 550, 120, 80, true],
+  [200, 550, 160, 80, true],
   [480, 420, 120,  40, true],
   [210, 310, 120,  40, true],
   [ 30, 280,  80,  40, true],
@@ -216,8 +217,31 @@ function draw() {
     if (fc % 60 < 30) {
       text("- press space to start -", width/2, height/2 + 20);
     }
-    textFont('arial black');
+    textSize(24);
+    //fill('black');
+    strokeWeight(2);
+    text('(c) credits', 80, height - 20);
+    if (showCredits) {
+      const linePad = 24;
+      fill('black');
+      stroke('white');
+      strokeWeight(4);
+      rect(width/2, height/2, width*5/6, height*0.6);
+      strokeWeight(1);
+      textSize(24);
+      fill('white');
+      textFont(pixelFont);
+      text('<Credits>', width/2, height/2 - 80);
+      textSize(18);
+      text('Game Design & Programming: Hiroki Oka & Mao Haomin', width/2, height/2 - linePad);
+      text('Character Drawing: Zhang Yue', width/2, height/2);
+      text('Sound Design: Kim Kwangyun', width/2, height/2 + linePad);
+      text('QA Test & Level Design: Kai Washino & Natsumi Matsui', width/2, height/2 + linePad*2);
+      text('                      Adhe Rahmatullah Sugiharto', width/2, height/2 + linePad*3);
+      text('Special Thanks: Masahiko Tsukamoto', width/2, height/2 + linePad*4);
+    }
     strokeWeight(1);
+    textFont('arial black');
     return;
   }
 
@@ -226,7 +250,7 @@ function draw() {
   player.update();
   player.draw();
   drawTime();
-  drawHowToPlay();
+  if (gameState === 1) drawHowToPlay();
   if (gameState === 4) {
     const distance = dist(player.x, player.y, 260+20, 80+20);
     if (distance < 20) player.judgeClear();
@@ -234,15 +258,22 @@ function draw() {
 }
 
 function drawHowToPlay() {
-  fill(0);
-  stroke('white');
+  fill('white');
+  //[200, 550, 160, 80, true],
   textFont(pixelFont);
   textSize(18);
+  const x = 220;
+  const y = 550+18;
   if (isDebug) {
+    fill('red');
     text('Debug', width/2 + 220, height - 60);
+    fill('white');
   }
-  text('space: ジャンプ', width/2 + 220, height - 40);
-  text('左右キー: 移動', width/2 + 220, height - 20);
+  text('<あそびかた>', x-20, y-34);
+  text('左右キー: 移動', x-20, y-10);
+  text('space: ジャンプ', x-20, y+14);
+  //text('space: ジャンプ', width/2 + 220, height - 40);
+  //text('左右キー: 移動', width/2 + 220, height - 20);
   textFont('arial black');
 }
 
@@ -383,18 +414,19 @@ function drawStageName(stage) {
   const stageNames = ['登山口', '急斜面', '中腹', '山頂'];
   const currentStageName = stageNames[stage-1];
   const LPAD = 80;
-  fill(255);
+  fill('skyblue');
   strokeWeight(4);
   rect(LPAD, 30, 120, 40, 4);
   strokeWeight(1);
   textSize(24);
-  fill(0);
-  stroke(0);
+  fill('black');
+  stroke('white');
   textFont(pixelFont);
   
   text(currentStageName, LPAD, 40);
   textFont('arial black');
 }
+
 
 class Player {
   constructor(x, y, s) {
@@ -588,6 +620,9 @@ class Block {
 
 // keyEvent functions
 function keyPressed() {
+  if (gameState === 0 && keyCode === 67) {
+    showCredits = !showCredits;
+  }
   if (gameState === 0 && keyCode === 32) {
       gameState = 1;
       gameStartSound.play();
@@ -619,22 +654,28 @@ function keyReleased() {
 }
 
 function drawBlock(x, y) {
-  fill(87, 58, 46);
-  stroke(60, 40, 30);
+  const fillCol = color(87, 58, 46);
+  const strokeCol = color(60, 40, 30);
+  const brightCol = color(117, 78, 66);
+  const darkCol = color(60, 40, 30);
+  const dotCol = color(100, 70, 60);
+
+  fill(fillCol);
+  stroke(strokeCol);
   rect(x, y, BLOCK_WIDTH, BLOCK_HEIGHT);
 
   noStroke();
 
-  fill(117, 78, 66);
-  rect(x, y - BLOCK_HEIGHT / 2 + 2, BLOCK_WIDTH, 4); // 上
-  rect(x - BLOCK_WIDTH / 2 + 2, y, 4, BLOCK_HEIGHT); // 左
+  fill(brightCol);
+  rect(x, y - BLOCK_HEIGHT / 2 + 2, BLOCK_WIDTH, 4); // top
+  rect(x - BLOCK_WIDTH / 2 + 2, y, 4, BLOCK_HEIGHT); // left
 
-  fill(60, 40, 30);
-  rect(x, y + BLOCK_HEIGHT / 2 - 2, BLOCK_WIDTH, 4); // 下
-  rect(x + BLOCK_WIDTH / 2 - 2, y, 4, BLOCK_HEIGHT); // 右
+  fill(darkCol);
+  rect(x, y + BLOCK_HEIGHT / 2 - 2, BLOCK_WIDTH, 4); // bottom
+  rect(x + BLOCK_WIDTH / 2 - 2, y, 4, BLOCK_HEIGHT); // right
 
   
-  fill(100, 70, 60);
+  fill(dotCol);
   for (let i = x - BLOCK_WIDTH / 2 + 5; i < x + BLOCK_WIDTH / 2; i += 5) {
     for (let j = y - BLOCK_HEIGHT / 2 + 5; j < y + BLOCK_HEIGHT / 2; j += 5) {
       let brightness = random(90, 120);
