@@ -170,11 +170,11 @@ function preload() {
   pixelFont = loadFont('./public/font/PixelMplus10-Regular.ttf');
 
   jumpSound = new Audio();
-  jumpSound.src = './public/sound/jump_sound.mp3';
+  jumpSound.src = './public/sound/retro_jump.mp3';
   gameStartSound = new Audio();
-  gameStartSound.src = './public/sound/game_start.mp3';
+  gameStartSound.src = './public/sound/retro_start.mp3';
   clearSound = new Audio();
-  clearSound.src = './public/sound/clear.mp3';
+  clearSound.src = './public/sound/retro_clear.mp3';
   interestingSound = new Audio();
   interestingSound.src = './public/sound/interesting.mp3';
   badSound = new Audio();
