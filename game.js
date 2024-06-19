@@ -1,4 +1,7 @@
 const gravity = 0.06;
+const BLOCK_WIDTH = 40;
+const BLOCK_HEIGHT = 40;
+/*
 const stageOneBlocksInfo = [
   //centerX, centerY, width, isVisible
   [200, 550, 120, 100, true],
@@ -9,7 +12,18 @@ const stageOneBlocksInfo = [
   [140, 160, 120,  32, true],
   [410,  60, 120,  48, true],
 ];
+*/
+const stageOneBlocksInfo = [
+  [200, 550, 120, 80, true],
+  [480, 420, 120,  40, true],
+  [210, 310, 120,  40, true],
+  [ 30, 280,  80,  40, true],
+  [420, 220,  80,  40, true],
+  [140, 160, 120,  40, true],
+  [410,  60, 120,  40, true],
+];
 
+/*
 const stageTwoBlocksInfo = [
   [540, 530, 100, 48, true],
   [240, 450, 100, 48, true],
@@ -20,7 +34,18 @@ const stageTwoBlocksInfo = [
   [560,  70,  48, 24, true],
   [ 60,   0,  20,  1, false],
 ];
+*/
+const stageTwoBlocksInfo = [
+  [540, 530, 120, 40, true],
+  [240, 450, 120, 40, true],
+  [220, 200, 120, 40, true],
+  [ 20, 325,  80, 40, true],
+  [ 60, 120,  40, 40, true],
+  [340, 100,  40, 40, true],
+  [560,  70,  40, 40, true],
+];
 
+/*
 const stageThreeBlocksInfo = [
   [320, 600,  20, 20, true],
   //[330, 570,   1, 60, false],
@@ -45,7 +70,28 @@ const stageThreeBlocksInfo = [
   [120,  100,  60, 20, true],
   //[105,  45,  30, 30, true],
 ];
+*/
+const stageThreeBlocksInfo = [
+  [300, 600,  80, 40, true],
+  [575, 580,  40, 40, true],
 
+  [100, 440,  40, 40, true],
+  [ 20, 310,  40, 40, true],
+  [130, 310,  80, 40, true],
+
+  [530, 500,  80, 40, true],
+  [340, 380,  80, 40, true],
+  [580, 320,  40, 40, true],
+  [520, 260,  120, 40, true],
+
+  [310, 190,  80, 40, true],
+  [170, 180,  80, 80, true],
+  [ 40, 170,  80, 80, true],
+  [240,  36,  40, 40, true],
+  [100,  100,  80, 40, true],
+];
+
+/*
 const stageFourBlocksInfo = [
   [220, 410,  40, 380, true],
   [420, 400,  40, 400, true],
@@ -60,6 +106,23 @@ const stageFourBlocksInfo = [
 
   [540, 290, 40,  20, true],
   [340, 300, 60,  20, true],
+];
+*/
+
+const stageFourBlocksInfo = [
+  [220, 410,  40, 400, true],
+  [420, 400,  40, 400, true],
+
+  [20, 580, 120, 40, true],
+  [160, 500, 80, 40, true],
+  [ 80, 380, 40,  40, true],
+  [180, 370, 40,  40, true],
+  [ 50, 250, 40,  40, true], 
+  [180, 260, 40,  40, true],
+  //[180, 150, 40,  40, true],
+
+  [540, 290, 40,  40, true],
+  [340, 300, 40,  40, true],
 ];
 
 let isClear = false;
@@ -105,7 +168,6 @@ function preload() {
   tsukakenImg = loadImage('./public/img/tsukaken.png');
 
   pixelFont = loadFont('./public/font/PixelMplus10-Regular.ttf');
-  tsukakenImg = loadImage('./public/img/tsukaken.png');
 
   jumpSound = new Audio();
   jumpSound.src = './public/sound/jump_sound.mp3';
@@ -166,7 +228,7 @@ function draw() {
   drawTime();
   drawHowToPlay();
   if (gameState === 4) {
-    const distance = dist(player.x, player.y, 250+20, 450+20);
+    const distance = dist(player.x, player.y, 260+20, 80+20);
     if (distance < 20) player.judgeClear();
   }
 }
@@ -303,12 +365,12 @@ function drawStageFour() {
   stroke(0);
   fill('#FFCC00');
   image(stageFourImg, 0, 0, width, height);
-  image(tsukakenImg, 250, 450, 40, 40);
+  image(tsukakenImg, 260, 80, 40, 40);
 }
 
 function drawEdge(stage) {
   noStroke();
-  fill('#99FF00');
+  fill(87, 58, 46);
   rect(0, height/2, 20, height);
   rect(width, height/2, 20, height);
   if (stage === 1) {
@@ -383,7 +445,6 @@ class Player {
       if (this.speedY !== 0) this.speedX *= -1;
     }
 
-    console.log(this.speedY)
     if (this.speedY > 9) badSound.play();
   }
 
@@ -515,7 +576,10 @@ class Block {
     if (this.isVisible === false) noFill();
     strokeWeight(1);
     stroke('green');
-    rect(this.x, this.y, this.w, this.h);
+    //rect(this.x, this.y, this.w, this.h);
+    const blockXNum = this.w / BLOCK_WIDTH;
+    const blockYNum = this.h / BLOCK_HEIGHT;
+    drawPlatform(this.x, this.y, blockXNum, blockYNum);
     noStroke();
     strokeWeight(1);
     stroke(0);
@@ -552,4 +616,41 @@ function keyPressed() {
 function keyReleased() {
   if (gameState !== 0 && player.isJumping) return;
   player.speedX = 0;
+}
+
+function drawBlock(x, y) {
+  fill(87, 58, 46);
+  stroke(60, 40, 30);
+  rect(x, y, BLOCK_WIDTH, BLOCK_HEIGHT);
+
+  noStroke();
+
+  fill(117, 78, 66);
+  rect(x, y - BLOCK_HEIGHT / 2 + 2, BLOCK_WIDTH, 4); // 上
+  rect(x - BLOCK_WIDTH / 2 + 2, y, 4, BLOCK_HEIGHT); // 左
+
+  fill(60, 40, 30);
+  rect(x, y + BLOCK_HEIGHT / 2 - 2, BLOCK_WIDTH, 4); // 下
+  rect(x + BLOCK_WIDTH / 2 - 2, y, 4, BLOCK_HEIGHT); // 右
+
+  
+  fill(100, 70, 60);
+  for (let i = x - BLOCK_WIDTH / 2 + 5; i < x + BLOCK_WIDTH / 2; i += 5) {
+    for (let j = y - BLOCK_HEIGHT / 2 + 5; j < y + BLOCK_HEIGHT / 2; j += 5) {
+      let brightness = random(90, 120);
+      fill(brightness, 70, 60);
+      rect(i, j, 2, 2);
+    }
+  }
+}
+
+
+function drawPlatform(x, y, blockXNum, blockYNum) {
+  const startX = x - (blockXNum - 1) * BLOCK_WIDTH / 2;
+  const startY = y - (blockYNum - 1) * BLOCK_WIDTH / 2;
+  for (let j = 0; j < blockYNum; j++) {
+    for (let i = 0; i < blockXNum; i++) {
+      drawBlock(startX + i * BLOCK_WIDTH, startY + j * BLOCK_HEIGHT);
+    }
+  }
 }
