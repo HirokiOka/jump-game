@@ -244,7 +244,7 @@ function draw() {
       fill('black');
       stroke('white');
       strokeWeight(4);
-      rect(width/2, height/2, width*5/6, height*0.6);
+      rect(width/2, height/2+40, width*5/6, height*0.5);
       strokeWeight(1);
       textSize(24);
       fill('white');
@@ -257,6 +257,9 @@ function draw() {
       text('QA Test & Level Design: Kai Washino & Natsumi Matsui', width/2, height/2 + linePad*2);
       text('                      Adhe Rahmatullah Sugiharto', width/2, height/2 + linePad*3);
       text('Special Thanks: Masahiko Tsukamoto', width/2, height/2 + linePad*4);
+      text('             Tsutomu Terada', width/2, height/2 + linePad*5);
+      text('             Shuhei Tsuchida', width/2, height/2 + linePad*6);
+      text('             Ayumi Ohnishi', width/2, height/2 + linePad*7);
     }
     strokeWeight(1);
     textFont('arial black');
@@ -363,7 +366,7 @@ function switchGameState() {
   } 
   if (player.highestStage < gameState) { 
     player.highestStage = gameState;
-    climbSound[gameState-1].play();
+    climbSound[gameState-2].play();
   }
 }
 
