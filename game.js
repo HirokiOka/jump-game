@@ -178,10 +178,12 @@ function preload() {
   gameStartSound.src = './public/sound/retro_start.mp3';
   clearSound = new Audio();
   clearSound.src = './public/sound/retro_clear.mp3';
+  //clearSound.volume = 1.0;
   interestingSound = new Audio();
-  interestingSound.src = './public/sound/interesting.mp3';
+  interestingSound.src = './public/sound/interesting_new.mp3';
   badSound = new Audio();
-  badSound.src = './public/sound/bad.mp3';
+  badSound.src = './public/sound/bad_new.mp3';
+  //badSound.volume = 1.0;
   credOpenSound = new Audio();
   credOpenSound.src = './public/sound/cred_open.mp3';
   credCloseSound = new Audio();
@@ -647,6 +649,7 @@ function keyPressed() {
     if (keyCode === 32) {
       player.jump();
       jumpSound.play();
+      //badSound.play();
     }
     if (keyCode === RIGHT_ARROW) {
       player.speedX += 2;
