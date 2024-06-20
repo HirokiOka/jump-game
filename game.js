@@ -148,8 +148,9 @@ let credCloseSound = null;
 let badSound = null;
 let clearSound = null;
 let climbSound = [];
+let currentComment = '';
 
-
+const comments = ['すごくいいと思う', 'ええやん', 'いいんじゃない?', '面白いやん', '気悪いわなぁ'];
 let pixelFont = null;
 let tsukaboImagesLeft = [];
 let tsukaboImagesRight = [];
@@ -271,6 +272,7 @@ function draw() {
   player.update();
   player.draw();
   drawTime();
+  drawComment(currentComment);
   if (gameState === 1) drawHowToPlay();
   if (gameState === 4) {
     const distance = dist(player.x, player.y, 260+20, 80+20);
@@ -367,24 +369,44 @@ function switchGameState() {
   if (player.highestStage < gameState) { 
     player.highestStage = gameState;
     climbSound[gameState-2].play();
+    currentComment = comments[gameState-2];
   }
 }
 
 function drawTime() {
   let ellapsedSec = floor(frameCount / 60); 
-  const RPAD = 80;
+  const RPAD = 70;
+  const TPAD = 20;
   const RectH = 40;
 
   strokeWeight(4);
   fill(255);
-  rect(width-RPAD, 30, 120, RectH);
+  rect(width-RPAD, TPAD, 120, RectH);
   textSize(24);
   fill(0);
   strokeWeight(1);
   stroke(0);
   textFont(pixelFont);
-  text(`${secToMin(ellapsedSec)}`, width-RPAD, RectH);
+  text(`${secToMin(ellapsedSec)}`, width-RPAD, RectH-TPAD/2);
   textFont('arial black');
+}
+
+function drawComment(comment) {
+  const RPAD = 70;
+  const TPAD = 60;
+  const RectH = 40;
+
+  strokeWeight(4);
+  fill(255);
+  rect(width-RPAD, TPAD, 120, RectH);
+  textSize(14);
+  fill(0);
+  strokeWeight(1);
+  stroke(0);
+  textFont(pixelFont);
+  text(comment, width-RPAD, RectH+TPAD/2);
+  textFont('arial black');
+  textSize(24);
 }
 
 function secToMin(sec) {
@@ -501,7 +523,10 @@ class Player {
       if (this.speedY !== 0) this.speedX *= -1;
     }
 
-    if (this.speedY > 9) badSound.play();
+    if (this.speedY > 9) {
+      badSound.play();
+      currentComment = comments[4];
+    }
   }
 
   jump() {
@@ -539,6 +564,7 @@ class Player {
   }
 
   judgeClear(blockIndex) {
+      currentComment = comments[3];
       fill('yellow');
       textSize(64);
       stroke(0);
