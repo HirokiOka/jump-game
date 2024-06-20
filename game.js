@@ -117,12 +117,12 @@ function preload() {
   gameStartSound.volume = 0.5;
   clearSound = new Audio();
   clearSound.src = './public/sound/retro_clear.mp3';
-  //clearSound.volume = 1.0;
+
   interestingSound = new Audio();
   interestingSound.src = './public/sound/interesting_new.mp3';
   badSound = new Audio();
   badSound.src = './public/sound/bad_new.mp3';
-  //badSound.volume = 1.0;
+
   credOpenSound = new Audio();
   credOpenSound.src = './public/sound/cred_open.mp3';
   credCloseSound = new Audio();
