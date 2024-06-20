@@ -2,19 +2,8 @@ const gravity = 0.06;
 const BLOCK_WIDTH = 40;
 const BLOCK_HEIGHT = 40;
 let showCredits = false;
-/*
 const stageOneBlocksInfo = [
   //centerX, centerY, width, isVisible
-  [200, 550, 120, 100, true],
-  [480, 420, 120,  48, true],
-  [210, 310, 120,  32, true],
-  [ 30, 280,  60,  32, true],
-  [420, 220,  84,  32, true],
-  [140, 160, 120,  32, true],
-  [410,  60, 120,  48, true],
-];
-*/
-const stageOneBlocksInfo = [
   [200, 550, 160, 80, true],
   [480, 420, 120,  40, true],
   [210, 310, 120,  40, true],
@@ -24,18 +13,6 @@ const stageOneBlocksInfo = [
   [410,  60, 120,  40, true],
 ];
 
-/*
-const stageTwoBlocksInfo = [
-  [540, 530, 100, 48, true],
-  [240, 450, 100, 48, true],
-  [220, 200, 100, 48, true],
-  [ 20, 325,  80, 48, true],
-  [ 60, 100,  20, 48, true],
-  [340, 100,  24, 24, true],
-  [560,  70,  48, 24, true],
-  [ 60,   0,  20,  1, false],
-];
-*/
 const stageTwoBlocksInfo = [
   [540, 530, 120, 40, true],
   [240, 450, 120, 40, true],
@@ -46,32 +23,6 @@ const stageTwoBlocksInfo = [
   [560,  70,  40, 40, true],
 ];
 
-/*
-const stageThreeBlocksInfo = [
-  [320, 600,  20, 20, true],
-  //[330, 570,   1, 60, false],
-  [575, 580,  48, 20, true],
-  [320, 540,  48, 20, true],
-
-  [100, 440,  20, 20, true],
-  [ 20, 310,  20, 40, true],
-  [130, 310,  80, 20, true],
-
-  //[540, 440,   1, 60, false],
-  [550, 460,  20, 30, true],
-  [340, 360,  60, 20, true],
-  //[520, 320,  20, 20, true],
-  [580, 320,  20, 20, true],
-  [520, 200,  20, 20, true],
-
-  [310, 190,  80, 20, true],
-  [170, 180,  60, 20, true],
-  [ 40, 170,  80, 20, true],
-  [240,  36,  20, 40, true],
-  [120,  100,  60, 20, true],
-  //[105,  45,  30, 30, true],
-];
-*/
 const stageThreeBlocksInfo = [
   [300, 600,  80, 40, true],
   [575, 580,  40, 40, true],
@@ -92,23 +43,6 @@ const stageThreeBlocksInfo = [
   [100,  100,  80, 40, true],
 ];
 
-/*
-const stageFourBlocksInfo = [
-  [220, 410,  40, 380, true],
-  [420, 400,  40, 400, true],
-
-  [20, 550, 100, 20, true],
-  [160, 500, 60, 20, true],
-  [ 80, 380, 60,  20, true],
-  [180, 370, 40,  20, true],
-  [ 50, 250, 40,  20, true], 
-  [180, 260, 40,  20, true],
-  [180, 150, 40,  20, true],
-
-  [540, 290, 40,  20, true],
-  [340, 300, 60,  20, true],
-];
-*/
 
 const stageFourBlocksInfo = [
   [220, 410,  40, 400, true],
@@ -180,6 +114,7 @@ function preload() {
   jumpSound.src = './public/sound/retro_jump.mp3';
   gameStartSound = new Audio();
   gameStartSound.src = './public/sound/retro_start.mp3';
+  gameStartSound.volume = 0.5;
   clearSound = new Audio();
   clearSound.src = './public/sound/retro_clear.mp3';
   //clearSound.volume = 1.0;
@@ -194,11 +129,11 @@ function preload() {
   credCloseSound.src = './public/sound/cred_close.mp3';
 
   climbSound[0] = new Audio();
-  climbSound[0].src = './public/sound/ohnishi.wav';
+  climbSound[0].src = './public/sound/ohnishi_v.mp3';
   climbSound[1] = new Audio();
-  climbSound[1].src = './public/sound/tsuchida.wav';
+  climbSound[1].src = './public/sound/tsuchida_v.mp3';
   climbSound[2] = new Audio();
-  climbSound[2].src = './public/sound/terada.wav';
+  climbSound[2].src = './public/sound/terada_v.mp3';
 }
 
 //initialize HTML canvas and game objects
