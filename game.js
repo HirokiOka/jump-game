@@ -114,6 +114,7 @@ function preload() {
   jumpSound.src = './public/sound/retro_jump.mp3';
   gameStartSound = new Audio();
   gameStartSound.src = './public/sound/retro_start.mp3';
+  gameStartSound.volume = 0.5;
   clearSound = new Audio();
   clearSound.src = './public/sound/retro_clear.mp3';
   //clearSound.volume = 1.0;
@@ -128,11 +129,11 @@ function preload() {
   credCloseSound.src = './public/sound/cred_close.mp3';
 
   climbSound[0] = new Audio();
-  climbSound[0].src = './public/sound/ohnishi.wav';
+  climbSound[0].src = './public/sound/ohnishi_v.mp3';
   climbSound[1] = new Audio();
-  climbSound[1].src = './public/sound/tsuchida.wav';
+  climbSound[1].src = './public/sound/tsuchida_v.mp3';
   climbSound[2] = new Audio();
-  climbSound[2].src = './public/sound/terada.wav';
+  climbSound[2].src = './public/sound/terada_v.mp3';
 }
 
 //initialize HTML canvas and game objects
