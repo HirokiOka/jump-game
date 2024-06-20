@@ -147,6 +147,9 @@ let credOpenSound = null;
 let credCloseSound = null;
 let badSound = null;
 let clearSound = null;
+let climbSound = [];
+
+
 let pixelFont = null;
 let tsukaboImagesLeft = [];
 let tsukaboImagesRight = [];
@@ -188,6 +191,13 @@ function preload() {
   credOpenSound.src = './public/sound/cred_open.mp3';
   credCloseSound = new Audio();
   credCloseSound.src = './public/sound/cred_close.mp3';
+
+  climbSound[0] = new Audio();
+  climbSound[0].src = './public/sound/ohnishi.wav';
+  climbSound[1] = new Audio();
+  climbSound[1].src = './public/sound/tsuchida.wav';
+  climbSound[2] = new Audio();
+  climbSound[2].src = './public/sound/terada.wav';
 }
 
 //initialize HTML canvas and game objects
@@ -280,8 +290,6 @@ function drawHowToPlay() {
   text('<あそびかた>', x-20, y-34);
   text('左右キー: 移動', x-20, y-10);
   text('space: ジャンプ', x-20, y+14);
-  //text('space: ジャンプ', width/2 + 220, height - 40);
-  //text('左右キー: 移動', width/2 + 220, height - 20);
   textFont('arial black');
 }
 
@@ -353,6 +361,10 @@ function switchGameState() {
     gameState = 3;
     player.y = 20;
   } 
+  if (player.highestStage < gameState) { 
+    player.highestStage = gameState;
+    climbSound[gameState-1].play();
+  }
 }
 
 function drawTime() {
@@ -445,6 +457,7 @@ class Player {
     this.speedY = 0;
     this.isJumping = false;
     this.currentFrame = 0;
+    this.highestStage = 1;
   }
 
   draw() {
@@ -649,7 +662,6 @@ function keyPressed() {
     if (keyCode === 32) {
       player.jump();
       jumpSound.play();
-      //badSound.play();
     }
     if (keyCode === RIGHT_ARROW) {
       player.speedX += 2;
