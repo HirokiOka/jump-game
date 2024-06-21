@@ -28,8 +28,8 @@ const stageThreeBlocksInfo = [
   [575, 580,  40, 40, true],
 
   [100, 440,  40, 40, true],
-  [ 20, 310,  40, 40, true],
-  [130, 310,  80, 40, true],
+  [ 40, 310,  120, 40, true],
+  //[130, 310,  80, 40, true],
 
   [530, 500,  80, 40, true],
   [340, 380,  80, 40, true],
@@ -37,9 +37,9 @@ const stageThreeBlocksInfo = [
   [520, 260,  120, 40, true],
 
   [310, 190,  80, 40, true],
-  [170, 180,  80, 80, true],
+  [170, 180,  80, 40, true],
   [ 40, 170,  80, 80, true],
-  [240,  36,  40, 40, true],
+  [240,  20,  80, 40, true],
   [100,  100,  80, 40, true],
 ];
 
@@ -145,6 +145,7 @@ function setup() {
   textAlign(CENTER);
   const playerSize = 28;
   player = new Player(width/2, height-playerSize, playerSize);
+  /*
   stageOneBlocks = new Array(stageOneBlocksInfo.length).fill(null).map((_v, i) => (
     new Block(stageOneBlocksInfo[i][0], stageOneBlocksInfo[i][1], stageOneBlocksInfo[i][2], stageOneBlocksInfo[i][3], stageOneBlocksInfo[i][4])
   ));
@@ -157,6 +158,11 @@ function setup() {
   stageFourBlocks = new Array(stageFourBlocksInfo.length).fill(null).map((_v, i) => (
     new Block(stageFourBlocksInfo[i][0], stageFourBlocksInfo[i][1], stageFourBlocksInfo[i][2], stageFourBlocksInfo[i][3], stageFourBlocksInfo[i][4])
   ));
+  */
+  stageOneBlocks = stageOneBlocksInfo.map((info) => new Block(...info));
+  stageTwoBlocks = stageTwoBlocksInfo.map((info) => new Block(...info));
+  stageThreeBlocks = stageThreeBlocksInfo.map((info) => new Block(...info));
+  stageFourBlocks = stageFourBlocksInfo.map((info) => new Block(...info));
 }
 
 //Draw and update game
@@ -173,7 +179,6 @@ function draw() {
       text("- press space to start -", width/2, height/2 + 20);
     }
     textSize(24);
-    //fill('black');
     strokeWeight(2);
     text('(c) credits', 80, height - 20);
     if (showCredits) {
@@ -234,47 +239,19 @@ function drawHowToPlay() {
   textFont('arial black');
 }
 
-//global functions in draw
-function drawStartScene() {
-    background(0);
-    textFont('arial black');
-    fill(255);
-    textSize(64);
-    text("TOZAN KING", width/2, height/2 -20);
-    textSize(24);
-    textFont('Impact');
-    text("- press space to start -", width/2, height/2 + 20);
-    fill(0)
-    //image(titleImg, 0, 0, width, height);
-}
-
+//Global functions in draw
 function drawGameScene(stage) {
   drawStage(stage);
-  if (stage === 1) {
-    stageOneBlocks.forEach((block, i) => {
-      //fill('#3A2012');
-      block.draw();
-      player.detectCollision(block, i);
-    });
-  } else if (stage === 2) {
-    stageTwoBlocks.forEach((block, i) => {
-      //fill('#99FF00');
-      block.draw();
-      player.detectCollision(block, i);
-    });
-  } else if (stage === 3) {
-    stageThreeBlocks.forEach((block, i) => {
-      //fill('#99CCFF');
-      block.draw();
-      player.detectCollision(block, i);
-    });
-  } else if (stage === 4) {
-    stageFourBlocks.forEach((block, i) => {
-      //fill('#FFCC00');
-      block.draw();
-      player.detectCollision(block, i);
-    });
-  }
+  let blocks;
+  if (stage === 1) blocks = stageOneBlocks;
+  else if (stage === 2) blocks = stageTwoBlocks;
+  else if (stage === 3) blocks = stageThreeBlocks;
+  else if (stage === 4) blocks = stageFourBlocks;
+
+  blocks.forEach((block) => {
+    block.draw();
+    player.detectCollision(block);
+  });
   drawStageName(stage);
   drawEdge(stage);
 }
@@ -304,6 +281,48 @@ function switchGameState() {
     climbSound[gameState-2].play();
     currentComment = comments[gameState-2];
   }
+}
+
+function drawStage(stage) {
+  const logoSize  = 40;
+  if (stage === 1) {
+    image(stageOneImg, 0, 0, width, height);
+  } else if (stage === 2) {
+    image(stageTwoImg, 0, 0, width, height);
+  } else if (stage === 3) {
+    image(stageThreeImg, 0, 0, width, height);
+  } else if (stage === 4) {
+    image(stageFourImg, 0, 0, width, height);
+    image(tsukakenImg, 260, 80, logoSize, logoSize);
+  }
+}
+
+function drawEdge(stage) {
+  noStroke();
+  fill(87, 58, 46);
+  rect(0, height/2, 20, height);
+  rect(width, height/2, 20, height);
+  if (stage === 1) {
+    rect(width/2, height, width, 20);
+  }
+  stroke(0);
+}
+
+function drawStageName(stage) {
+  const stageNames = ['登山口', '急斜面', '中腹', '山頂'];
+  const currentStageName = stageNames[stage-1];
+  const LPAD = 80;
+  fill('skyblue');
+  strokeWeight(4);
+  rect(LPAD, 30, 120, 40, 4);
+  strokeWeight(1);
+  textSize(24);
+  fill('black');
+  stroke('white');
+  textFont(pixelFont);
+  
+  text(currentStageName, LPAD, 40);
+  textFont('arial black');
 }
 
 function drawTime() {
@@ -349,48 +368,6 @@ function secToMin(sec) {
   const displaySeconds = seconds < 10 ? 0 + seconds.toString() : seconds.toString();
   const displayTime = displayMinutes + ":" + displaySeconds;
   return displayTime;
-}
-
-
-function drawStage(stage) {
-  if (stage === 1) {
-    image(stageOneImg, 0, 0, width, height);
-  } else if (stage === 2) {
-    image(stageTwoImg, 0, 0, width, height);
-  } else if (stage === 3) {
-    image(stageThreeImg, 0, 0, width, height);
-  } else if (stage === 4) {
-    image(stageFourImg, 0, 0, width, height);
-    image(tsukakenImg, 260, 80, 40, 40);
-  }
-}
-
-function drawEdge(stage) {
-  noStroke();
-  fill(87, 58, 46);
-  rect(0, height/2, 20, height);
-  rect(width, height/2, 20, height);
-  if (stage === 1) {
-    rect(width/2, height, width, 20);
-  }
-  stroke(0);
-}
-
-function drawStageName(stage) {
-  const stageNames = ['登山口', '急斜面', '中腹', '山頂'];
-  const currentStageName = stageNames[stage-1];
-  const LPAD = 80;
-  fill('skyblue');
-  strokeWeight(4);
-  rect(LPAD, 30, 120, 40, 4);
-  strokeWeight(1);
-  textSize(24);
-  fill('black');
-  stroke('white');
-  textFont(pixelFont);
-  
-  text(currentStageName, LPAD, 40);
-  textFont('arial black');
 }
 
 
@@ -455,10 +432,11 @@ class Player {
     this.isJumping = true;
   }
 
-  detectCollision(block, index) {
-    this.detectCollisionY(block, index);
+  detectCollision(block) {
+    this.detectCollisionY(block);
     this.detectCollisionX(block);
   }
+
 
   detectCollisionY(block) {
     if ((this.speedY > 0) && this.isOnTheBlock(block)) {
@@ -604,10 +582,12 @@ function keyPressed() {
       gameState = 1;
       gameStartSound.play();
   } else {
+    /*
     if (keyCode === 13) {
       isDebug = !isDebug;
       if (isClear) window.location.reload();
     }
+    */
     if (!isDebug && player.isJumping) return;
     if (keyCode === 32) {
       player.jump();
