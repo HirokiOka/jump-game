@@ -582,12 +582,10 @@ function keyPressed() {
       gameState = 1;
       gameStartSound.play();
   } else {
-    /*
     if (keyCode === 13) {
-      isDebug = !isDebug;
+      //isDebug = !isDebug;
       if (isClear) window.location.reload();
     }
-    */
     if (!isDebug && player.isJumping) return;
     if (keyCode === 32) {
       player.jump();
