@@ -92,7 +92,7 @@ let isLeft = true;
 
 //load assets before rendering
 function preload() {
-
+  //Image assets
   tsukaboImagesLeft[0] = loadImage('./public/img/tsukabo_left_1.png');
   tsukaboImagesLeft[1] = loadImage('./public/img/tsukabo_left_2.png');
   tsukaboImagesLeft[2] = loadImage('./public/img/tsukabo_left_3.png');
@@ -110,6 +110,7 @@ function preload() {
 
   pixelFont = loadFont('./public/font/PixelMplus10-Regular.ttf');
 
+  //Sound assets
   jumpSound = new Audio();
   jumpSound.src = './public/sound/retro_jump.mp3';
   gameStartSound = new Audio();
@@ -248,31 +249,28 @@ function drawStartScene() {
 }
 
 function drawGameScene(stage) {
+  drawStage(stage);
   if (stage === 1) {
-    drawStageOne();
     stageOneBlocks.forEach((block, i) => {
-      fill('#3A2012');
+      //fill('#3A2012');
       block.draw();
       player.detectCollision(block, i);
     });
   } else if (stage === 2) {
-    drawStageTwo();
     stageTwoBlocks.forEach((block, i) => {
-      fill('#99FF00');
+      //fill('#99FF00');
       block.draw();
       player.detectCollision(block, i);
     });
   } else if (stage === 3) {
-    drawStageThree();
     stageThreeBlocks.forEach((block, i) => {
-      fill('#99CCFF');
+      //fill('#99CCFF');
       block.draw();
       player.detectCollision(block, i);
     });
   } else if (stage === 4) {
-    drawStageFour();
     stageFourBlocks.forEach((block, i) => {
-      fill('#FFCC00');
+      //fill('#FFCC00');
       block.draw();
       player.detectCollision(block, i);
     });
@@ -353,30 +351,18 @@ function secToMin(sec) {
   return displayTime;
 }
 
-function drawStageOne() {
-  image(stageOneImg, 0, 0, width, height);
-  fill(0);
-  stroke(0);
-  fill('#3A2012');
-}
 
-function drawStageTwo() {
-  image(stageTwoImg, 0, 0, width, height);
-  stroke(0);
-  fill('#99FF00');
-}
-
-function drawStageThree() {
-  image(stageThreeImg, 0, 0, width, height);
-  stroke(0);
-  fill('#99CCFF');
-}
-
-function drawStageFour() {
-  stroke(0);
-  fill('#FFCC00');
-  image(stageFourImg, 0, 0, width, height);
-  image(tsukakenImg, 260, 80, 40, 40);
+function drawStage(stage) {
+  if (stage === 1) {
+    image(stageOneImg, 0, 0, width, height);
+  } else if (stage === 2) {
+    image(stageTwoImg, 0, 0, width, height);
+  } else if (stage === 3) {
+    image(stageThreeImg, 0, 0, width, height);
+  } else if (stage === 4) {
+    image(stageFourImg, 0, 0, width, height);
+    image(tsukakenImg, 260, 80, 40, 40);
+  }
 }
 
 function drawEdge(stage) {
